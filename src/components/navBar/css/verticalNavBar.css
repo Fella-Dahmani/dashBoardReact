@@ -1,11 +1,13 @@
 .vertical-nav {
-  width: 200px;
-  height: 100%;
-  background-color: #adadad;
+  height: calc(100% - 60px); /* Adjust height based on the horizontal nav height */
+  width: 300px;
   position: fixed;
-  top: 60px;
+  top: 60px; /* Adjust top based on the horizontal nav height */
   left: 0;
-  padding-top: 20px;
+  background-color: white;
+  padding-top: 60px;
+  display: flex;
+  flex-direction: column;
 }
 
 .vertical-nav a {
@@ -16,21 +18,18 @@
   color: black;
 
 }
-
 .vertical-nav p {
-  color: #1b1b1b;
+  color: #C6C6C6;
   padding-left: 10px;
-  font-weight: bold;
 
 }
-
 .vertical-nav div {
   margin-left: 10px;
   display: flex;
   align-items: center;
 }
 
-.vertical-nav img {
+.vertical-nav img{
   width: 30px;
   height: 30px;
   border-radius: 50%;
