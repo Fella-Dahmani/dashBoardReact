@@ -1,0 +1,38 @@
+.vertical-nav {
+  width: 200px;
+  height: 100%;
+  background-color: #adadad;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  padding-top: 20px;
+}
+
+.vertical-nav a {
+  padding: 15px 0 15px 10px;
+
+  text-decoration: none;
+  font-size: 14px;
+  color: black;
+
+}
+
+.vertical-nav p {
+  color: #1b1b1b;
+  padding-left: 10px;
+  font-weight: bold;
+
+}
+
+.vertical-nav div {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.vertical-nav img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+
+}

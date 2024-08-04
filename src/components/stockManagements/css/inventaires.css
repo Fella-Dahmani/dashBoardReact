@@ -1,0 +1,195 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%;
+    background-color: #E2E2E2;
+  }
+  
+  #app {
+    display: flex;
+    height: 100%;
+  }
+  
+
+
+  .title{
+    font-size: 18px;
+    color: black;
+    margin-bottom: 20px;
+  }
+
+  .subtitle{
+    font-size: 14px;
+    color: black;
+    margin-left: 10px;
+  
+  }
+
+  .subTitleContainer{
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+  }
+
+  .subTitleContainerlocation{
+    margin-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+  }
+
+  .subTitleContainerlocation input{
+    margin-left: 10px;
+    border-radius: 10px;
+    width: 300px;
+    height: 30px;
+    border: none;
+    background-color: #cccccc;
+    color: #636363;
+    cursor: pointer;
+    text-align: center;
+
+  }
+
+  .subTitleContainerlocation button{
+    margin-left: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #2596be;
+    cursor: pointer;
+    text-align: center;
+    width: 200px;
+    height: 30px;
+    cursor: pointer;
+  }
+
+  .subTitleContainer img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .filterContainer{
+    margin-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+  }
+
+  .filterContainer h3{
+    font-size: medium;
+    
+    color: #636363;
+    
+  }
+
+  .filterContainer input{
+    margin-left: 10px;
+    border-radius: 10px;
+    width: 200px;
+    height: 30px;
+    border: none;
+    background-color: #cccccc;
+    color: #636363;
+    cursor: pointer;
+    text-align: center;
+    
+  }
+
+  .filterContainer button{
+    margin-left: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #cccccc;
+    color: #636363;
+    cursor: pointer;
+    text-align: center;
+    width: 200px;
+    height: 30px;
+    cursor: pointer;
+  }
+
+  .filterContainer .btnPrimary{
+    background-color: #2596be;
+    color: white;
+    width: 150px;
+    border-radius: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    text-align: center;
+ }
+
+
+  .filterContainer button:hover{
+    background-color: #949494;
+    color: white;
+  }
+
+  .filterContainer button:active{
+    background-color: #2596be;
+  border-color: b#2596be; 
+  }
+
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 12px;
+    text-align: left;
+  }
+  
+  thead {
+    background-color: #ffffff;
+    color: #9F9F9F;
+    cursor: pointer;
+  }
+  
+  thead th {
+    padding: 12px 15px;
+  }
+  
+  tbody tr {
+    border-bottom: 1px solid #919191;
+    
+  }
+  
+
+  tbody td {
+    padding: 12px 15px;
+  }
+  
+
+
+.subTitleContainer select {
+  appearance: none;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 16px;
+  
+  width: 150px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+
+
+.dropdown:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: solid transparent;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+.dropdown select::-ms-expand {
+  display: none;
+}

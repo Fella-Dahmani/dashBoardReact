@@ -1,0 +1,6 @@
+.content {
+    margin-left: 200px; /* Même largeur que la barre de navigation verticale */
+    padding: 20px;
+    flex-grow: 1;
+    margin-top: 60px; /* Hauteur de la barre de navigation horizontale */
+  }
