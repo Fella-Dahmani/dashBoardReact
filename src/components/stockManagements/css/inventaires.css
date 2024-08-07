@@ -193,3 +193,93 @@ body, html {
 .dropdown select::-ms-expand {
   display: none;
 }
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  text-align: center;
+  width: 250px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+.card p {
+  margin: 0 0 20px;
+  color: #777;
+}
+.button {
+  background-color: #007BFF;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  display: inline-block;
+}
+.button:hover {
+  background-color: #0056b3;
+}
+
+.Cardcontainer{
+  display: flex;
+  justify-content: space-between;
+}
+
+.clicked {
+  background-color: #BFDCF3;
+  color: #fff;
+}
+
+.form-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  margin-top: 50px;
+}
+.form-card h3 {
+  margin: 0 0 20px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+.form-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.form-buttons button:hover {
+  opacity: 0.8;
+}
+.form-buttons button:first-child {
+  background-color: #007BFF;
+  color: #fff;
+}
+.form-buttons button:last-child {
+  background-color: #ccc;
+}

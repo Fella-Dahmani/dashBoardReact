@@ -38,6 +38,14 @@ const VerticalNavBar = () => {
             </div>
 
             <p>Administration</p>
+            <div>
+                <img src={dashboardAsset} alt="dashboard" />
+                <a href="UsersManagement">Gestion des utilisateurs</a>
+            </div>
+            <div>
+                <img src={dashboardAsset} alt="dashboard" />
+                <a href="BddManagement">Gestion de la base des donnees</a>
+            </div>
         </div>
     );
 };

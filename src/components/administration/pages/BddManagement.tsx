@@ -3,8 +3,9 @@
 const BddManagement = () => {
     return (
         <div>
-            <h1>Gestion de la base des données</h1>
+            <h1 className="title">Gestion de la base des données</h1>
         </div>
+        
     );
 };
 
