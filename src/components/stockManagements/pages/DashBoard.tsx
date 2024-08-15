@@ -1,4 +1,11 @@
+import React, { useState } from "react";
 
+const [activeForm, setActiveForm] = useState <
+    "ventes" | "achats" | null >(null);
+
+const ventes = () => {
+
+}
 
 const DashBoard = () => {
     return (
