@@ -12,8 +12,8 @@ body, html {
 }
 
 .content {
-  margin-left: 300px; /* Même largeur que la barre de navigation verticale */
+  margin-left: 300px; 
   padding: 20px;
   flex-grow: 1;
-  margin-top: 60px; /* Hauteur de la barre de navigation horizontale */
+  margin-top: 60px; 
 }

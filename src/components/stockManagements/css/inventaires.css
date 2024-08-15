@@ -113,6 +113,8 @@ body, html {
     cursor: pointer;
   }
 
+  
+
   .filterContainer .btnPrimary{
     background-color: #2596be;
     color: white;
@@ -282,4 +284,9 @@ body, html {
 }
 .form-buttons button:last-child {
   background-color: #ccc;
+}
+
+.active {
+  background-color: #2596be;
+  color: white;
 }
