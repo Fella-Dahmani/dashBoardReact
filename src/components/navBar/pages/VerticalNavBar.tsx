@@ -46,6 +46,12 @@ const VerticalNavBar = () => {
                 <img src={dashboardAsset} alt="dashboard" />
                 <a href="BddManagement">Gestion de la base des donnees</a>
             </div>
+
+            <p>Gestion des alertes</p>
+            <div>
+                <img src={dashboardAsset} alt="dashboard" />
+                <a href="AlertsManagement">Gestion des alertes</a>
+            </div>
         </div>
     );
 };

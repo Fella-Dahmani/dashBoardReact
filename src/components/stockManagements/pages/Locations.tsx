@@ -1,133 +1,169 @@
+import React, { useState } from "react";
+
+type LocationData = {
+  code: string;
+  description: string;
+  categorie: string;
+  quantite: number;
+  fournisseur: string;
+  prix: number;
+  seuilCritique: number;
+  entrepot: string;
+};
 
 const Locations = () => {
-    return (
-        <div>
-            <h1 className="title">Emplacement</h1>
+  // Exemple de données, à remplacer par les données réelles
+  const [data, setData] = useState<LocationData[]>([
+    { code: "1", description: "Produit 1", categorie: "Cat1", quantite: 10, fournisseur: "Fournisseur A", prix: 50, seuilCritique: 5, entrepot: "Entrepot 1" },
+    { code: "2", description: "Produit 2", categorie: "Cat2", quantite: 20, fournisseur: "Fournisseur B", prix: 100, seuilCritique: 10, entrepot: "Entrepot 2" },
+    // Ajoutez d'autres données ici
+  ]);
 
-            <div className="subTitleContainerlocation">
-                <h2 className="subtitle">Par produit</h2>
-                <input type="text" placeholder="Recherche" />
-                <button>Appliquer les filtres</button>
-            </div>
+  const [search, setSearch] = useState({
+    produit: "",
+    categorie: "",
+    emplacement: "",
+  });
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Description</th>
-                        <th>Categorie</th>
-                        <th>Quantite</th>
-                        <th>Fournisseur</th>
-                        <th>Prix</th>
-                        <th>Seuil Critique</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                </tbody>
-            </table>
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearch({ ...search, [name]: value.toLowerCase() });
+  };
 
-            
-            <div className="subTitleContainerlocation">
-                <h2 className="subtitle">Par categorie</h2>
-                <input type="text" placeholder="Recherche" />
-                <button>Appliquer les filtres</button>
-            </div>
+  const filteredByProduit = data.filter(item =>
+    item.code.toLowerCase().includes(search.produit) ||
+    item.description.toLowerCase().includes(search.produit)
+  );
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Description</th>
-                        <th>Categorie</th>
-                        <th>Quantite</th>
-                        <th>Fournisseur</th>
-                        <th>Prix</th>
-                        <th>Seuil Critique</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                </tbody>
-            </table>
+  const filteredByCategorie = data.filter(item =>
+    item.code.toLowerCase().includes(search.categorie) ||
+    item.categorie.toLowerCase().includes(search.categorie)
+  );
 
+  const filteredByEmplacement = data.filter(item =>
+    item.code.toLowerCase().includes(search.emplacement) ||
+    item.entrepot.toLowerCase().includes(search.emplacement)
+  );
 
-            
-            <div className="subTitleContainerlocation">
-                <h2 className="subtitle">Par emplacement</h2>
-                <input type="text" placeholder="Recherche" />
-                <button>Appliquer les filtres</button>
-            </div>
+  return (
+    <div>
+      <h1 className="title">Emplacement</h1>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Description</th>
-                        <th>Categorie</th>
-                        <th>Quantite</th>
-                        <th>Fournisseur</th>
-                        <th>Prix</th>
-                        <th>Seuil Critique</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
+      {/* Section Par produit */}
+      <div className="subTitleContainerlocation">
+        <h2 className="subtitle">Par produit</h2>
+        <input
+          type="text"
+          name="produit"
+          placeholder="Recherche"
+          onChange={handleSearchChange}
+        />
+        <button>Appliquer les filtres</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Categorie</th>
+            <th>Quantite</th>
+            <th>Fournisseur</th>
+            <th>Prix</th>
+            <th>Seuil Critique</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredByProduit.map(item => (
+            <tr key={item.code}>
+              <td>{item.code}</td>
+              <td>{item.description}</td>
+              <td>{item.categorie}</td>
+              <td>{item.quantite}</td>
+              <td>{item.fournisseur}</td>
+              <td>{item.prix}</td>
+              <td>{item.seuilCritique}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Section Par catégorie */}
+      <div className="subTitleContainerlocation">
+        <h2 className="subtitle">Par catégorie</h2>
+        <input
+          type="text"
+          name="categorie"
+          placeholder="Recherche"
+          onChange={handleSearchChange}
+        />
+        <button>Appliquer les filtres</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Categorie</th>
+            <th>Quantite</th>
+            <th>Fournisseur</th>
+            <th>Prix</th>
+            <th>Seuil Critique</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredByCategorie.map(item => (
+            <tr key={item.code}>
+              <td>{item.code}</td>
+              <td>{item.description}</td>
+              <td>{item.categorie}</td>
+              <td>{item.quantite}</td>
+              <td>{item.fournisseur}</td>
+              <td>{item.prix}</td>
+              <td>{item.seuilCritique}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Section Par emplacement */}
+      <div className="subTitleContainerlocation">
+        <h2 className="subtitle">Par emplacement</h2>
+        <input
+          type="text"
+          name="emplacement"
+          placeholder="Recherche"
+          onChange={handleSearchChange}
+        />
+        <button>Appliquer les filtres</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Categorie</th>
+            <th>Quantite</th>
+            <th>Fournisseur</th>
+            <th>Seuil Critique</th>
+            <th>Entrepot</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredByEmplacement.map(item => (
+            <tr key={item.code}>
+              <td>{item.code}</td>
+              <td>{item.description}</td>
+              <td>{item.categorie}</td>
+              <td>{item.quantite}</td>
+              <td>{item.fournisseur}</td>
+              <td>{item.seuilCritique}</td>
+              <td>{item.entrepot}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default Locations;
