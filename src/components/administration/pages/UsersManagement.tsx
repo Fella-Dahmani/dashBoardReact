@@ -17,9 +17,7 @@ const UsersManagement = () => {
   const [password, setPassword] = useState<string>("");
 
   const handleSubmitAdd = () => {
-    // Handle form submission
     console.log("User Added:", { name, surname, position, password });
-    // Clear the form and hide it after submission
     setName("");
     setSurname("");
     setPosition("");
@@ -28,18 +26,16 @@ const UsersManagement = () => {
   };
 
   const handleSubmitChangePassword = () => {
-    // Handle change password form submission
     console.log("Password Changed");
     setActiveForm(null);
   };
 
   const handleSubmitDelete = () => {
-    // Handle delete user form submission
     console.log("User Deleted");
     setActiveForm(null);
   };
   const handleCancel = () => {
-    // Clear the form and hide it
+   
     setName("");
     setSurname("");
     setPosition("");
@@ -50,7 +46,6 @@ const UsersManagement = () => {
   };
 
   const handleSubmitManageRights = () => {
-    // Handle manage rights form submission
     console.log("User Rights Managed");
     setActiveForm(null);
   };
