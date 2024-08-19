@@ -7,6 +7,8 @@ import CustomerOrders from './components/ordersManagements/pages/CustomerOrders'
 import SupplierOrders from './components/ordersManagements/pages/SupplierOrders';
 import UsersManagement from './components/administration/pages/UsersManagement';
 import BddManagement from './components/administration/pages/BddManagement';
+import GestionAlertes from './components/AlertManagement/GestionAlertes';
+
 
 function AppRoutes() {
     return (
@@ -19,6 +21,9 @@ function AppRoutes() {
             <Route path="/supplierOrders" element={<SupplierOrders />} />
             <Route path="/usersManagement" element={<UsersManagement />} />
             <Route path="/bddManagement" element={<BddManagement />} />
+            <Route path="/GestionAlertes" element={<GestionAlertes />} />
+
+            
         </Routes>
     );
 }
