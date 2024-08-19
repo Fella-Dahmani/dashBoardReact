@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import DashBoard from './components/stockManagements/pages/DashBoard';
 import Inventaires from './components/stockManagements/pages/Inventaires';
 import StockMouvements from './components/stockManagements/pages/StockMouvements';
 import Locations from './components/stockManagements/pages/Locations';
@@ -16,6 +17,7 @@ function AppRoutes() {
             <Route path="/customerOrders" element={<CustomerOrders />} />
             <Route path="/supplierOrders" element={<SupplierOrders />} />
             <Route path="/usersManagement" element={<UsersManagement />} />
+            <Route path="/bddManagement" element={<BddManagement />} />
             <Route path="/bddManagement" element={<BddManagement />} />
         </Routes>
     );
