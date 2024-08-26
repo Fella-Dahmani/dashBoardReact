@@ -44,13 +44,13 @@ const Inventaires = () => {
             params.surstock = true;
         }
         if (categorie) {
-            params.categorie_id = categorie;
+            params.categorie = categorie.toUpperCase();
         }
         if (fournisseur) {
-            params.fournisseur_id = fournisseur;
+            params.fournisseur = fournisseur.toUpperCase();
         }
 
-        axios.get("http://localhost:8080/api/produits/filtered", { params })
+        axios.get("https://stockvisiobackend.onrender.com/api/produits/filtered", { params })
             .then(response => {
                 setFilteredProduits(response.data);
             })
