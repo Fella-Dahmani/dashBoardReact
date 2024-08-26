@@ -1,3 +1,4 @@
+
 // GestionAlertes.tsx
 import React, { useEffect, useState } from 'react';
 import { Alert } from './Alert';
@@ -6,7 +7,13 @@ import './GestionAlertes.css';
 
 const GestionAlertes: React.FC = () => {
   const [alertes, setAlertes] = useState<Alert[]>([]);
-  const [filterCriteria, setFilterCriteria] = useState({});
+  const [filterCriteria, setFilterCriteria] = useState({
+    nomAlerte: '',
+    fournisseur: '',
+    statutAlerte: '',
+    dateCreee: '',
+    dateReglee: '',
+  });
 
   useEffect(() => {
     const getAlertes = async () => {
@@ -21,22 +28,6 @@ const GestionAlertes: React.FC = () => {
     getAlertes();
   }, []);
 
-  const handleAlerte = async (id: number) => {
-    const alerte = alertes.find((alerte) => alerte.id === id);
-    if (alerte) {
-      try {
-        await updateAlerte(id, { gere: !alerte.gere });
-        setAlertes((prevAlertes) =>
-          prevAlertes.map((a) =>
-            a.id === id ? { ...a, gere: !a.gere } : a
-          )
-        );
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour de l\'alerte:', error);
-      }
-    }
-  };
-
   const appliquerFiltre = async () => {
     try {
       const filteredAlertes = await applyFilter(filterCriteria);
@@ -49,37 +40,84 @@ const GestionAlertes: React.FC = () => {
   return (
     <div className="gestion-alertes">
       <h1>Gestion des Alertes</h1>
-      <button onClick={appliquerFiltre}>Appliquer Filtre</button>
+      <div className="filters">
+        <label>Filtre:</label>
+        <input
+          type="text"
+          placeholder="Nom Alerte"
+          value={filterCriteria.nomAlerte}
+          onChange={(e) =>
+            setFilterCriteria({ ...filterCriteria, nomAlerte: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Statut Alerte"
+          value={filterCriteria.statutAlerte}
+          onChange={(e) =>
+            setFilterCriteria({ ...filterCriteria, statutAlerte: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Fournisseur"
+          value={filterCriteria.fournisseur}
+          onChange={(e) =>
+            setFilterCriteria({ ...filterCriteria, fournisseur: e.target.value })
+          }
+        />
+        <label>Date Gérée:</label>
+        <input
+          type="date"
+          placeholder="Date Créée"
+          value={filterCriteria.dateCreee}
+          onChange={(e) =>
+            setFilterCriteria({ ...filterCriteria, dateCreee: e.target.value })
+          }
+        />
+        <label>Date Réglée:</label>
+        <input
+          type="date"
+          placeholder="Date Réglée"
+          value={filterCriteria.dateReglee}
+          onChange={(e) =>
+            setFilterCriteria({ ...filterCriteria, dateReglee: e.target.value })
+          }
+        />
+        <button onClick={appliquerFiltre}>Appliquer Filtre</button>
+      </div>
       <table className="alertes-table">
         <thead>
           <tr>
             <th>Alerte Géré</th>
-            <th>Alerte</th>
+            <th>Nom Alerte</th>
             <th>Fournisseur</th>
             <th>Date Créée</th>
             <th>Date Réglée</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {alertes.map((alerte) => (
-            <tr key={alerte.id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={alerte.gere}
-                  onChange={() => handleAlerte(alerte.id)}
-                />
-              </td>
-              <td>{alerte.message}</td>
-              <td>{alerte.fournisseur}</td>
-              <td>{alerte.dateCreee}</td>
-              <td>{alerte.dateReglee}</td>
-              <td>
-                <button onClick={() => handleAlerte(alerte.id)}>Gérer</button>
-              </td>
-            </tr>
-          ))}
+          <tr>
+            <td>Oui</td>
+            <td>Alerte Stock Bas</td>
+            <td>Fournisseur X</td>
+            <td>2024-08-10</td>
+            <td>2024-08-12</td>
+          </tr>
+          <tr>
+            <td>Non</td>
+            <td>Alerte Erreur Base de Données</td>
+            <td>Fournisseur Y</td>
+            <td>2024-08-15</td>
+            <td>Non réglée</td>
+          </tr>
+          <tr>
+            <td>Oui</td>
+            <td>Alerte Problème Réseau</td>
+            <td>Fournisseur Z</td>
+            <td>2024-08-18</td>
+            <td>2024-08-19</td>
+          </tr>
         </tbody>
       </table>
     </div>

@@ -1,7 +1,7 @@
 // AlertService.ts
 import { Alert } from './Alert';
 
-const API_URL = 'https://api.example.com/alertes'; // Remplacer par l'URL de votre API
+const API_URL = 'https://stockvisiobackend.onrender.com/api/alertes'; // Verifier l'URL avec Bruno
 
 export const fetchAlertes = async (): Promise<Alert[]> => {
   const response = await fetch(API_URL);

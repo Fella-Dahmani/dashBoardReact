@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import {AuthContext} from '../../context/AuthContext';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Nom d\'utilisateur:', username);
-    console.log('Mot de passe:', password);
-    // Logique de connexion ici
-  };
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  if(!authContext){
+    return null;
+  }
+  const {login} = authContext;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {      
+       e.preventDefault();
+
+       if (username === 'admin' && password === 'password') {     
+                login();          
+                navigate('/dashboard'); 
+                }
+                 else
+                 {          
+               alert('Identifiants incorrects');
+             }
+             };
+
+
+ 
   return (
     <div className="login-container">
       <h1>Connexion</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Nom d'utilisateur:</label>
           <input
@@ -35,8 +55,8 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <button type="button" onClick={handleLogin}>
-          Login
+        <button type="submit">
+          Se Connecter
         </button>
       </form>
     </div>

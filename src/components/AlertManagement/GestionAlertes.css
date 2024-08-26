@@ -1,4 +1,6 @@
-/* GestionAlertes.css */
+/*
+ GestionAlertes.css */
+ /*
 .gestion-alertes {
     padding: 20px;
   }
@@ -40,4 +42,53 @@
   .alertes-table button:hover {
     background-color: #0056b3;
   }
+    */
+
+    
+    .gestion-alertes {
+      margin: 20px;
+    }
+    
+    .filters {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .filters label {
+      margin-right: 10px;
+    }
+    
+    .filters input {
+      margin-right: 10px;
+    }
+    
+    .filters button {
+      margin-left: auto;
+    }
+    
+    .alertes-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .alertes-table th,
+    .alertes-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    
+    .alertes-table th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+
+
+
+
+
+    
+    
+    
   

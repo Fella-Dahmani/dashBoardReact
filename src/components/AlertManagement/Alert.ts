@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 
 // Alert.ts
 export interface Alert {
+    dateCree: ReactNode;
+    nomAlerte: ReactNode;
     dateReglee: ReactNode;
     dateCreee: ReactNode;
     fournisseur: ReactNode;
