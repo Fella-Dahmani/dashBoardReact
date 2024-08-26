@@ -11,6 +11,7 @@ import BddManagement from './components/administration/pages/BddManagement';
 function AppRoutes() {
     return (
         <Routes>
+            <Route path="" element={<DashBoard />}/>
             <Route path="/inventaires" element={<Inventaires />} />
             <Route path="/stockMouvements" element={<StockMouvements />} />
             <Route path="/locations" element={<Locations />} />
