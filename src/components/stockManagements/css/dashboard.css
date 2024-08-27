@@ -37,6 +37,10 @@ table > tbody {
   text-decoration: none;
 }
 
+.reportFormat{
+  display: inline-block;
+}
+
 .report {
   background-color: #fff; /* White background for the card */
   border-radius: 8px; /* Rounded corners */
@@ -50,4 +54,8 @@ table > tbody {
 /* Optional: Add hover effect for interactivity */
 .report:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.card{
+  text-align: left !important;
 }
