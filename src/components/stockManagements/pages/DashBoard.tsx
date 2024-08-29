@@ -3,37 +3,89 @@ import * as d3 from "d3";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+/*
+select *
+from produits
+*/
+
 type Produit = {
     id: number;
-    nom: String;
+    codeProduit: string;
+    nom: string;
+    description: string;
+    categorie: {
+        code: string;
+        description: string;
+    };
+    seuilCritique: number;
+    prixU: number;
+    quantiteEnStock: number;
+    prixVente: number;
+    fournisseur: {
+        id: number;
+        codeFournisseur: string;
+        nom: string;
+    };
+};
+
+type Categorie = {
     code: String;
     description: String;
-    categorie: String;
-    qty: number;
-    prix: number;
 }
 
+/*
+select *
+from fournisseur
+*/
+
 type Fournisseur = {
-    code: String;
-    prenom: String;
-    nom: String;
     id: number;
+    codeFournisseur: String;
+    nom: String;
+    prenom: String;
+    statut: Boolean;
+/*  
+    email: String;
+    tel: String;
+    adresse: String;
+    nrc: String;
+ */
 }
+
+/*
+    url: /api/client/dashboard/profits
+
+
+select c.nom || ', ' || c.prenom as name, min(c.client_id), sum(lc.quantite*p.prix_u) as ventes 
+from lignescommande lc
+join produits p on p.produit_id = lc.produit_id
+join commandes_clients cc on lc.commandes_clients_id = cc.commande_id
+join clients c on c.client_id = cc.client_id
+group by c.client_id
+order by ventes desc
+*/
 
 type Client = {
     nom: String;
     id: number;
+    profits: number;
 }
 
+/*
+    /api/client/dashboard/entree
+*/
 type Entree = {
     id: number;
-    produitId: number;
+    produit: {id:number;}
     qty: number;
 }
 
+/*
+    /api/client/dashboard/sortie
+*/
 type Sortie = {
     id: number;
-    produitId: number;
+    produit: {id:number;}
     qty: number;
 }
 
@@ -86,6 +138,8 @@ const DashBoard = () => {
     *   Most Likely missing product over time data.
     */
 
+
+
     //hanlde user input
     const updateSelectedYear = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedYear(Number(event.target.value));
@@ -116,6 +170,7 @@ const DashBoard = () => {
     //refresh Logic
     useEffect(() => {
         applyFilters();
+        console.log("applyfitler")
     }, [selectedYear, selectedMonth, selectedFournisseur, selectedProducts])
 
     const applyFilters = () =>{
@@ -125,33 +180,53 @@ const DashBoard = () => {
         updateTables();
     } 
 
+    // call to the BDD
     const syncData = () => {
 
-            // *** PUT THE REAL VALUE HERE ***
-            axios.get("", {}).then(response => {
+        const host = "http://localhost:8080/"
+        const rootApi = "api/"
+        const baseURL = host + rootApi
+        var targetUrl = ""
+
+
+            targetUrl = baseURL+"clients/profits"
+            axios.get(targetUrl, {}).then(response => {
                 setClients(response.data);
             }).catch();
-            
-                // *** PUT THE REAL VALUE HERE ***
-            axios.get("", {}).then(response => {
+
+            targetUrl = baseURL+"fournisseurs"
+            axios.get(targetUrl, {}).then(response => {
                 setFournisseurs(response.data);
-            }).catch();
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération des fournisseurs :", error);}
+            );
+
+            targetUrl = baseURL+"produits"
+            axios.get(targetUrl, {})
+                .then(response => {
+                    setProduits(response.data);
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des produits :", error);
+                });
+             
+            targetUrl = baseURL+"entree"
+            axios.get(targetUrl, {})
+                .then(response => {
+                    setSorties(response.data);
+                }).catch(
+
+                );
     
-            // *** PUT THE REAL VALUE HERE ***
-            axios.get("", {}).then(response => {
-                setProduits(response.data);
-            }).catch();
-            
-                // *** PUT THE REAL VALUE HERE ***
-            axios.get("", {}).then(response => {
-                setSorties(response.data);
-            }).catch();
-    
-            // *** PUT THE REAL VALUE HERE ***
-            axios.get("", {}).then(response => {
-                setEntrees(response.data);
-            }).catch();
-                    
+            targetUrl = baseURL+"sortie"
+            axios.get(targetUrl, {})
+                    .then(response => {
+                    setEntrees(response.data);
+                }).catch(
+
+                );
+                        
     }
 
     const updateCards = () => {
@@ -171,7 +246,6 @@ const DashBoard = () => {
 
     //creates the stock over time graph
     useEffect(() => {
-        console.log('useEffect running'); // Check if this runs more than once
 
         // Define chart dimensions and margins
         const width = 640;
@@ -313,7 +387,6 @@ const DashBoard = () => {
                             ))}
                     </select>
                 </div>
-                <br />
             </div>
 
 
@@ -367,8 +440,8 @@ const DashBoard = () => {
 
             <div className="reportFormat">
                 
-            <select 
-                    className="FournisseurPicker" 
+                <select 
+                    className="FournisseurPicker, dataPicker" 
                     id="FournisseurPicker" 
                     onChange={updateSelectedFournisseur} 
                     defaultValue="Choisir le Fournisseur">
@@ -379,20 +452,14 @@ const DashBoard = () => {
                             </option>
                         ))}
                 </select>
-
-                <br />
-
-                <div id="StockOverTime" className="report"></div>
-            </div>
-            <div className="reportFormat">
                 
-            <select 
-                    className="ProductPicker"
+                <select 
+                    className="ProductPicker, dataPicker"
                     id="ProductPicker"
                     multiple
                     onChange={updateSelectedProducts} 
-                    defaultValue="Choisir le Fournisseur">
-                    <option value="Choisir le Fournisseur" disabled>Choisir le Fournisseur</option>
+                    defaultValue={["Choisir les Produits"]}>
+                    <option value="Choisir les Produits" disabled>Choisir les Produits</option>
                     {fournisseurNoms.map(nom => (
                             <option key={nom} value={nom}>
                                 {nom}
@@ -400,10 +467,16 @@ const DashBoard = () => {
                         ))}
                 </select>
 
+
                 <br />
 
+                <div id="StockOverTime" className="report"></div>
+            </div>
+            <div className="reportFormat">
+                <h3>Top 5 des Clients</h3><br /><br />
                 <div id="top5Clients" className="report"></div>
             </div>
+
             <br />
             <br />
 
@@ -412,6 +485,7 @@ const DashBoard = () => {
                 use the array.map() to create your rows.
             */}
             <div id="chiffreParProduit" className="report conatiner">
+                <h3>Chiffre d'affaire par produit</h3>
                 <table className="table">
                     <thead>
                         <tr>
