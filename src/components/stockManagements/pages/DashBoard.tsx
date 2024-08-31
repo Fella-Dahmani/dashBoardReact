@@ -158,7 +158,6 @@ const DashBoard = () => {
     };
 
     const updateSelectedFournisseur = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(updateSelectedFournisseur)
         setSelectedFournisseur(event.target.value);
     };
 
@@ -178,7 +177,6 @@ const DashBoard = () => {
     //refresh Logic
     useEffect(() => {
         applyFilters();
-        console.log("applyfitler")
     }, [selectedYear, selectedMonth, selectedFournisseur, selectedProducts])
 
     const applyFilters = () =>{
@@ -251,9 +249,6 @@ const DashBoard = () => {
                 years.forEach(date => 
                     displayYears.push(date)
                 )
-                years.forEach(date => 
-                    console.log(date)
-                )
                 setYears(displayYears)
 
     
@@ -283,7 +278,6 @@ const DashBoard = () => {
             sumSurStock = calculateSumSurtock(sumSurStock)
             sumRupture = calculateSumRupture(sumRupture)
             
-            /*             console.log("sum : "+ sumVentes) */
             valueTotalVentes = sumVentes; // Use a number directly if possible
             valueTotalAchats = sumAchats;
             valueTotalSurstocks = sumSurStock;
@@ -463,33 +457,31 @@ const DashBoard = () => {
         const tableauProduits = d3.select("#chiffreParProduit tbody");
         tableauProduits.selectAll("tr").remove();
 
-/*         console.log("produits: " + produits) */
 
     
         // Check for fournisseur selection
-        if (selectedFournisseur == null || selectedFournisseur === "Choisir le Fournisseur") {
-            for (let i = 0; i < 4 && i < produits.length; i++) {
-                produittableau[i] = produits[i];
-            }
-/*             console.log("No selected fournisseur path, length: " + produittableau.length); */
+        if (selectedFournisseur == null || selectedFournisseur === "Tout") {
+                for (let i = 0; produittableau.length < 5 && i < produits.length; i++) {
+                    produittableau[i] = produits[i];
+                }
         } else {
-            for (let i = 0; i < 4 && i < produits.length; i++) {
-                produittableau[i] = produits[i];
+            for (let i = 0; produittableau.length < 5 && i < produits.length; i++) {
+                if(produits[i].fournisseur.nom == selectedFournisseur || selectedFournisseur == "Tout" )
+                    {produittableau[i] = produits[i];}
             }
-/*             console.log("Selected fournisseur path, length: " + produittableau.length); */
 
         }
     
         // Append rows and cells for each produit
         produittableau.forEach(produit => {
+
             const row = tableauProduits.append("tr").attr("key", produit.id);
-/*             console.log(row) */
+
             row.append("td").text(produit.codeProduit);
             row.append("td").text(produit.description);
             row.append("td").text(produit.categorie.description);
             row.append("td").text(produit.quantiteEnStock);
             row.append("td").text(produit.prixU);
-/*             console.log(row) */
         });
     };
 
