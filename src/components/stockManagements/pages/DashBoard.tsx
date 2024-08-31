@@ -1,12 +1,14 @@
 import "../css/dashboard.css"
 import * as d3 from "d3";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
 
 /*
 select *
 from produits
 */
+
+
 
 type Produit = {
     id: number;
@@ -20,6 +22,7 @@ type Produit = {
     seuilCritique: number;
     prixU: number;
     quantiteEnStock: number;
+    quantiteMaximale: number;
     prixVente: number;
     fournisseur: {
         id: number;
@@ -29,8 +32,8 @@ type Produit = {
 };
 
 type Categorie = {
-    code: String;
-    description: String;
+    code: string;
+    description: string;
 }
 
 /*
@@ -40,9 +43,9 @@ from fournisseur
 
 type Fournisseur = {
     id: number;
-    codeFournisseur: String;
-    nom: String;
-    prenom: String;
+    codeFournisseur: string;
+    nom: string;
+    prenom: string;
     statut: Boolean;
 /*  
     email: String;
@@ -66,7 +69,7 @@ order by ventes desc
 */
 
 type Client = {
-    nom: String;
+    nom: string;
     id: number;
     profits: number;
 }
@@ -77,7 +80,8 @@ type Client = {
 type Entree = {
     id: number;
     produit: {id:number;}
-    qty: number;
+    quantite: number;
+    dateOperation: string;
 }
 
 /*
@@ -86,7 +90,8 @@ type Entree = {
 type Sortie = {
     id: number;
     produit: {id:number;}
-    qty: number;
+    quantite: number;
+    dateOperation: string;
 }
 
 
@@ -108,31 +113,33 @@ const DashBoard = () => {
         "Mai","Juin","Juillet","Août",
         "Septembre","Octobre","Novembre","Décembre"
     ]
-    var fournisseurNoms: string[] = [];
+
 
     // Selector State Management
-    const [years, setYears] = useState<number[]>([2022, 2023, 2024]); //availableYears
-    const [selectedYear, setSelectedYear] = useState<number | null>(null);
-    const [selectedMonth, setSelectedMonth] = useState<String | null>(null);
-    const [selectedFournisseur,setSelectedFournisseur] = useState<String | null>(null); //state []
-    const [selectedProducts,setSelectedProducts] = useState<String[] | null>(null); //state []
+    const [years, setYears] = useState<string[]>(["2022", "2023", "2024"]); //availableYears
+    const [selectedYear, setSelectedYear] = useState<string | null>("Tout");
+    const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+    const [selectedFournisseur,setSelectedFournisseur] = useState<string | null>(null); //state []
+    const [selectedProducts,setSelectedProducts] = useState<string[] | null>(null); //state []
 
-        
+            // Ensure fournisseurNoms state is managed
+    const [fournisseurNoms, setFournisseurNoms] = useState<string[]>([]);
 
 
     // values for rendering Graphs and Cards
-    var ventes = []
+    var ventes =[]
     var achats = []
     var surstock = []
     var ruptures = []
-    var totalVentes = "test ventes"
+    var [totalVentes, setTotalVentes] = useState<string>("test ventes");
     var augmentationVentes = "test ventes"
-    var totalAchats = "test achats"
+    var [totalAchats, setTotalAchats] = useState<string>("test achats");
     var augmentationAchats = "test achats"
-    var totalSurstocks = "test surstocks"
+    var [totalSurstocks, setTotalSurstocks] = useState<string>("test surtock");
     var augmentationSurstocks = "test surstocks"
-    var totalRuptures = "test ruptures"
+    var [totalRuptures, setTotalRuptures] = useState<string>("test rupture");
     var augmentationRuptures = "test ruptures"
+    var produittableau : Produit[] = []
 
     /*  
     *   Most Likely missing product over time data.
@@ -142,7 +149,7 @@ const DashBoard = () => {
 
     //hanlde user input
     const updateSelectedYear = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedYear(Number(event.target.value));
+        setSelectedYear(event.target.value);
     };
 
     const updateSelectedMonth = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -151,6 +158,7 @@ const DashBoard = () => {
     };
 
     const updateSelectedFournisseur = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(updateSelectedFournisseur)
         setSelectedFournisseur(event.target.value);
     };
 
@@ -188,7 +196,6 @@ const DashBoard = () => {
         const baseURL = host + rootApi
         var targetUrl = ""
 
-
             targetUrl = baseURL+"clients/profits"
             axios.get(targetUrl, {}).then(response => {
                 setClients(response.data);
@@ -214,34 +221,287 @@ const DashBoard = () => {
             targetUrl = baseURL+"entree"
             axios.get(targetUrl, {})
                 .then(response => {
-                    setSorties(response.data);
-                }).catch(
-
-                );
+                    setSorties(response.data);})
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des sorties :", error);
+                });
     
             targetUrl = baseURL+"sortie"
             axios.get(targetUrl, {})
                     .then(response => {
                     setEntrees(response.data);
-                }).catch(
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des entrees:", error);
+                });
 
-                );
-                        
-    }
+                //set the list of selectable years
+                var years = new Set<string>();
+                entrees.forEach(entre => {
+                    if(entre.dateOperation.length > 0){
+                        years.add(entre.dateOperation.substring(0,4))
+                    }
+                })
+                sorties.forEach(sortie => {
+                    if(sortie.dateOperation.length > 0){
+                        years.add(sortie.dateOperation.substring(0,4))
+                    }
+                })
+                var displayYears :string[] = ["Tout"]
+                years.forEach(date => 
+                    displayYears.push(date)
+                )
+                years.forEach(date => 
+                    console.log(date)
+                )
+                setYears(displayYears)
+
+    
+
+    
+    };
 
     const updateCards = () => {
 
-        //update each card one by one
+        let valueTotalVentes = 0;
+        let valueTotalAchats = 0;
+        let valueTotalSurstocks = 0;
+        let valueTotalRuptures = 0;
+
+
+        if (sorties.length > 0 && produits.length > 0 && produits[0] != null && produits[0] != undefined) {
+            let sumVentes = 0;
+            let sumAchats = 0;
+            let sumSurStock = 0;
+            let sumRupture = 0;
+
+            var yearToMatch = selectedYear
+            var monthToMatch = selectedMonth
+
+            sumVentes = calculateSumVentes(sumVentes)
+            sumAchats = calculateSumAchats(sumAchats)
+            sumSurStock = calculateSumSurtock(sumSurStock)
+            sumRupture = calculateSumRupture(sumRupture)
+            
+            /*             console.log("sum : "+ sumVentes) */
+            valueTotalVentes = sumVentes; // Use a number directly if possible
+            valueTotalAchats = sumAchats;
+            valueTotalSurstocks = sumSurStock;
+            valueTotalRuptures = sumRupture
+        }
+
+                //update each card one by one
+                setTotalVentes(valueTotalVentes.toString());
+                augmentationVentes = "aplha ventes"
+                setTotalAchats(valueTotalAchats.toString());
+                augmentationAchats = "test achats"
+                setTotalSurstocks(valueTotalSurstocks.toString());
+                augmentationSurstocks = "test surstocks"
+                setTotalRuptures(valueTotalRuptures.toString());
+                augmentationRuptures = "test ruptures"
+        
+
+
+        function calculateSumVentes(sumVentes: number): number{
+            sorties.forEach(sortie => {
+                // Find the product; if not found, default to { quantite: 0 }
+                const produit = produits.find(produit => produit.id === sortie.produit.id);
+                var prixProduit = 1
+                var yearToCheck = "Tout"
+                var monthToCheck = "Annee complete"
+
+                if(sortie.dateOperation != undefined && sortie.dateOperation.length > 0)
+                        var yearToCheck = sortie.dateOperation.substring(0,4)
+
+                    if(sortie.dateOperation != undefined && sortie.dateOperation.length > 0){
+                        var monthToCheck = sortie.dateOperation.substring(5,7)
+                        monthToCheck = setProperMonth(monthToCheck)
+                    }
+
+                if(produit != undefined){
+                    if(produit.prixVente != undefined){
+                        prixProduit = produit.prixVente
+                        if(yearToCheck === yearToMatch || yearToMatch == "Tout"){
+                                if(monthToCheck === monthToMatch){
+                                    sumVentes += sortie.quantite * prixProduit;
+                                }
+                                else if(monthToMatch == "Annee complete") {
+                                    sumVentes += sortie.quantite * prixProduit;
+                                }
+                        }
+                    }
+                }
+            })
+            return sumVentes
+        }
+
+        function calculateSumAchats(sumAchats: number): number{
+            entrees.forEach(entre => {
+                // Find the product; if not found, default to { quantite: 0 }
+                const produit = produits.find(produit => produit.id === entre.produit.id);
+                var prixProduit = 1
+                var yearToCheck = "Tout"
+                var monthToCheck = "Annee complete"
+
+                if(entre.dateOperation != undefined && entre.dateOperation.length > 0)
+                        var yearToCheck = entre.dateOperation.substring(0,4)
+
+                    if(entre.dateOperation != undefined && entre.dateOperation.length > 0){
+                        var monthToCheck = entre.dateOperation.substring(5,7)
+                        monthToCheck = setProperMonth(monthToCheck)
+                    }
+
+                if(produit != undefined){
+                    if(produit.prixVente != undefined){
+                        prixProduit = produit.prixVente
+                        if(yearToCheck === yearToMatch || yearToMatch == "Tout"){
+                            if(monthToCheck === monthToMatch){
+                                sumAchats += entre.quantite * prixProduit;
+                            }
+                            else if(monthToMatch == "Annee complete") {
+                                sumAchats += entre.quantite * prixProduit;
+                            }
+                        }
+                    }
+                }
+            })
+            return sumAchats
+        }
+        function calculateSumSurtock(sumSurStock: number): number{
+            produits.forEach(produit => {
+                // Find the product; if not found, default to { quantite: 0 }
+                var prixProduit = 1
+                var yearToCheck = "Tout"
+                var monthToCheck = "Annee complete"
+
+                if(produit.quantiteEnStock > produit.quantiteMaximale){
+                    sumSurStock += produit.prixU*(produit.quantiteEnStock-produit.quantiteMaximale)
+                }
+            })
+            return sumSurStock
+        }
+        function calculateSumRupture(sumRupture: number): number{
+            produits.forEach(produit => {
+                // Find the product; if not found, default to { quantite: 0 }
+                var prixProduit = 1
+                var yearToCheck = "Tout"
+                var monthToCheck = "Annee complete"
+
+                if(produit.quantiteEnStock < produit.seuilCritique){
+                    sumRupture += produit.prixU*(produit.seuilCritique - produit.quantiteEnStock)
+                }
+            })
+            return sumRupture
+        }
+
+            // convert a month in numeriuc(08) into a string(August)
+            function setProperMonth(monthToCheck: string) : string{
+                switch(monthToCheck){
+                    case "01":
+                        monthToCheck = "Janvier"
+                        break;
+
+                    case "02":
+                        monthToCheck = "Fevrier"
+                        break;
+
+                    case "03":
+                        monthToCheck = "Mars"
+                        break;
+
+                    case "04":
+                        monthToCheck ="Avril"
+                        break;
+
+                    case "05":
+                        monthToCheck = "Mai"
+                        break;
+
+                    case "06":
+                        monthToCheck = "Juin"
+                        break;
+
+                    case "07":
+                        monthToCheck = "Juillet"
+                        break;
+
+                    case "08":
+                        monthToCheck = "Août"
+                        break;
+
+                    case "09":
+                        monthToCheck = "Septembre"
+                        break;
+
+                    case "10":
+                        monthToCheck = "Octobre"
+                        break;
+
+                    case "11":
+                        monthToCheck = "Novembre"
+                        break;
+
+                    case "12":
+                        monthToCheck = "Décembre"
+                        break;
+                }
+                return monthToCheck
+            }
+
+        }
+
 
         
 
-    };
+
+
     const updateGraphs = () => {
 
     };
     const updateTables = () => {
+        produittableau = [];
+        const tableauProduits = d3.select("#chiffreParProduit tbody");
+        tableauProduits.selectAll("tr").remove();
 
+/*         console.log("produits: " + produits) */
+
+    
+        // Check for fournisseur selection
+        if (selectedFournisseur == null || selectedFournisseur === "Choisir le Fournisseur") {
+            for (let i = 0; i < 4 && i < produits.length; i++) {
+                produittableau[i] = produits[i];
+            }
+/*             console.log("No selected fournisseur path, length: " + produittableau.length); */
+        } else {
+            for (let i = 0; i < 4 && i < produits.length; i++) {
+                produittableau[i] = produits[i];
+            }
+/*             console.log("Selected fournisseur path, length: " + produittableau.length); */
+
+        }
+    
+        // Append rows and cells for each produit
+        produittableau.forEach(produit => {
+            const row = tableauProduits.append("tr").attr("key", produit.id);
+/*             console.log(row) */
+            row.append("td").text(produit.codeProduit);
+            row.append("td").text(produit.description);
+            row.append("td").text(produit.categorie.description);
+            row.append("td").text(produit.quantiteEnStock);
+            row.append("td").text(produit.prixU);
+/*             console.log(row) */
+        });
     };
+
+
+
+
+        // Make sure fournisseurNoms is populated correctly
+    useEffect(() => {
+        const noms = fournisseurs.map(fournisseur => fournisseur.nom);
+        setFournisseurNoms(noms);
+    }, [fournisseurs]);
+
 
 
     //creates the stock over time graph
@@ -307,7 +567,7 @@ const DashBoard = () => {
         return () => {
             chartContainer.selectAll("*").remove();
         };
-    }, []);
+    }, [selectedFournisseur]);
 
     //create the top 5 client graph
     useEffect(() => {
@@ -349,14 +609,12 @@ const DashBoard = () => {
         }
     
     
-    }, [])
+    }, [selectedFournisseur])
 
 
     //create the HTML Object.
     return (
         <div>
-
-
             <div>
                 <div className="headerContainer">
                     <h1>Tableau de bord</h1> 
@@ -378,8 +636,8 @@ const DashBoard = () => {
                         className="timePicker" 
                         id="MonthPicker" 
                         onChange={updateSelectedMonth} 
-                        defaultValue="Choisir le mois">
-                        <option value="Choisir le mois" disabled>Choisir le mois</option>
+                        defaultValue="Annee complete">
+                        <option value="Annee complete">Annee complete</option>
                         {availableMonths.map(month => (
                                 <option key={month} value={month}>
                                     {month}
@@ -441,11 +699,11 @@ const DashBoard = () => {
             <div className="reportFormat">
                 
                 <select 
-                    className="FournisseurPicker, dataPicker" 
-                    id="FournisseurPicker" 
-                    onChange={updateSelectedFournisseur} 
-                    defaultValue="Choisir le Fournisseur">
-                    <option value="Choisir le Fournisseur" disabled>Choisir le Fournisseur</option>
+                    className="FournisseurPicker, dataPicker"
+                    id="FournisseurPicker"
+                    onChange={updateSelectedFournisseur}
+                    defaultValue="Tout">
+                    <option value="Tout">Tout</option>
                     {fournisseurNoms.map(nom => (
                             <option key={nom} value={nom}>
                                 {nom}
@@ -460,9 +718,9 @@ const DashBoard = () => {
                     onChange={updateSelectedProducts} 
                     defaultValue={["Choisir les Produits"]}>
                     <option value="Choisir les Produits" disabled>Choisir les Produits</option>
-                    {fournisseurNoms.map(nom => (
-                            <option key={nom} value={nom}>
-                                {nom}
+                    {produits.map(produit => (
+                            <option key={produit.nom} value={produit.nom}>
+                                {produit.nom}
                             </option>
                         ))}
                 </select>
@@ -484,9 +742,9 @@ const DashBoard = () => {
                 update dynamically 
                 use the array.map() to create your rows.
             */}
-            <div id="chiffreParProduit" className="report conatiner">
+            <div id="chiffreParProduit" className="report container">
                 <h3>Chiffre d'affaire par produit</h3>
-                <table className="table">
+                <table className="chiffreParProduit">
                     <thead>
                         <tr>
                             <td>code</td>
@@ -497,13 +755,14 @@ const DashBoard = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="row">
-                            <td className="col"><div >test</div></td>
-                            <td className="col"><div >test</div></td>
-                            <td className="col"><div >test</div></td>
-                            <td className="col"><div >test</div></td>
-                            <td className="col"><div >test</div></td>
+                        <tr>
+                            <td>code</td>
+                            <td>description</td>
+                            <td>categorie</td>
+                            <td>Quantite</td>
+                            <td>prix total</td>
                         </tr>
+
                     </tbody>
                 </table>
             </div>
