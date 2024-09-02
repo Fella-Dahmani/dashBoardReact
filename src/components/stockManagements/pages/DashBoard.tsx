@@ -93,7 +93,7 @@ type Sortie = {
 }
 
 class produitsOverTime {
-    constructor(public produit: Produit, public stock: Record<number, yearArray>, public entrees: Entree[], public sorties: Sortie[]){}
+    constructor(public produit: Produit, public stock: Record<number, yearArray>, public entrees: Entree[], public sorties: Sortie[]) { }
 }
 type yearArray = number[]
 
@@ -175,6 +175,7 @@ const DashBoard = () => {
     var augmentationRuptures = "test ruptures"
     var produittableau: Produit[] = []
 
+    var [top5Clients, setTop5Clients] = useState<Client[]>([])
     /*  
     *   Most Likely missing product over time data.
     */
@@ -239,6 +240,8 @@ const DashBoard = () => {
         targetUrl = baseURL + "clients/profits"
         axios.get(targetUrl, {}).then(response => {
             setClients(response.data);
+            /*             console.log("Clients Payload: "+response.data)
+                        clients.forEach(client => {console.log("clients.nom: "+client.nom+", clients.profits: "+client.profits)}) */
         }).catch();
 
         targetUrl = baseURL + "fournisseurs"
@@ -296,9 +299,103 @@ const DashBoard = () => {
         setYears(displayYears)
 
         firstYear = findFirstYear();
+        calculteStockOverTime();
+
+        /*      console.log("calculteStockOverTime completed")
+                console.log("currentYear: "+currentYear+", firstYear: "+firstYear) */
+
+        function calculteStockOverTime() {
+
+            //load product into martix
+            produits.forEach((produit, index) => {
+                // produces an produits over time with only th eproduct in it
+                stocksOverTime[index] = new produitsOverTime(produit, {}, [], [])
+                // loads the produits over time with the full needed amount of empty years of tracking
+                for (var i = firstYear; i <= currentYear; i++) {
+                    stocksOverTime[index].stock[i] = new Array(12).fill(0);
+                }
+            })
+
+            //load entrees on products
+            entrees.forEach(entree => {
+                stocksOverTime.forEach(stock => {
+                    if (stock.produit.id == entree.produit.id)
+                        stock.entrees.push(entree)
+                })
+            })
+            //load sorties on products
+            sorties.forEach(sortie => {
+                stocksOverTime.forEach(stock => {
+                    if (stock.produit.id == sortie.produit.id)
+                        stock.sorties.push(sortie)
+                })
+            })
+
+            stocksOverTime.forEach(stock => {
+                //for each entre in stock, increment the stock record so it has the total incomming number for this months
+                stock.entrees.forEach(entree => {
+                    var anneeRaw: string = entree.dateOperation
+                    /*                     console.log(anneeRaw) */
+                    anneeRaw = "2" + anneeRaw.substring(1, 4)
+                    var annee: number = Number.parseInt(anneeRaw)
+
+                    var moisRaw: string = entree.dateOperation
+                    moisRaw = moisRaw.substring(5, 7)
+                    var mois: number = Number.parseInt(moisRaw)
+                    /*                     console.log("entree.produit.id: "+entree.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]+", entree.quantite: "+entree.quantite) */
+                    stock.stock[annee][mois] = stock.stock[annee][mois] += entree.quantite
+                    /*                     console.log("entree.produit.id: "+entree.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]) */
+                })
+
+                //for each sortie in stock, decrements the stock record so it has the total incomming number for this months
+                stock.sorties.forEach(sortie => {
+                    var anneeRaw: string = sortie.dateOperation
+                    anneeRaw = anneeRaw.substring(0, 4)
+                    var annee: number = Number.parseInt(anneeRaw)
+
+                    var moisRaw: string = sortie.dateOperation
+                    moisRaw = moisRaw.substring(5, 7)
+                    var mois: number = Number.parseInt(moisRaw)
+                    /*                     console.log("entree.produit.id: "+sortie.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]+", entree.quantite: "+sortie.quantite) */
+                    stock.stock[annee][mois] = stock.stock[annee][mois] -= sortie.quantite
+                    /*                     console.log("sortie.produit.id: "+sortie.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]) */
+
+                })
+
+                //variable to store quantity over time of the produit 
+                //So it can convert the quantity on the month per year(produitsOverTime) stores
+                //the stock at the date instead of the variation the month had
+                var qtyCalculator: number = stock.produit.quantiteEnStock
+                // find current month
+                var currentMonth: number = new Date().getMonth() - 1
+                // iterate throught currentYear => firstYear record with for loop--
+                for (var i = currentYear; i >= firstYear && i > 2000; i--) {
+                    // check if curent year and set sarting month to dec or current.
+                    if (i == currentYear)
+                        // call on function that goes through the array
+                        processStockPerYear(stock.stock[i], currentMonth)
+                    else
+                        processStockPerYear(stock.stock[i], 11)
+                }
 
 
+                // receive current array and starting month and converts the stored value from quantity fluctuation to quantitty at the time.
+                function processStockPerYear(stock: yearArray, startingMonth: number) {
+                    // go throught array from strating month to 0
+                    //                    console.log("startingMonth :"+startingMonth)
+                    for (var i = startingMonth; i >= 0; i--) {
+                        // save increamental value
+                        var increamentalValue = stock[i]
+                        // set the months value to qtyCalculator - increamental value
+                        //                        console.log("stock[i]: "+stock[i]+", qtyCalculator: "+qtyCalculator+", increamentalValue: "+increamentalValue)
+                        stock[i] = qtyCalculator -= increamentalValue
+                        //                        console.log("updated stock[i]: "+stock[i])
 
+                    }
+                }
+            }
+            )
+        }
     };
 
 
@@ -438,107 +535,21 @@ const DashBoard = () => {
 
     //##############################################################################################
     const updateGraphs = () => {
-        console.log("updateGraphs")
+        /*      console.log("updateGraphs") */
 
-        calculteStockOverTime();
-        
-        console.log("calculteStockOverTime completed")
-
-        console.log("currentYear: "+currentYear+", firstYear: "+firstYear)
-
-        function calculteStockOverTime() {
-
-            //load product into martix
-            produits.forEach((produit, index) => {
-                // produces an produits over time with only th eproduct in it
-                stocksOverTime[index] = new produitsOverTime(produit,{} ,[],[])
-                // loads the produits over time with the full needed amount of empty years of tracking
-                for (var i = firstYear; i <= currentYear; i++) {
-                    stocksOverTime[index].stock[i] = new Array(12).fill(0);
-                }
-            })
-
-            //load entrees on products
-            entrees.forEach(entree => {
-                stocksOverTime.forEach(stock => {
-                    if (stock.produit.id == entree.produit.id)
-                        stock.entrees.push(entree)
-                })
-            })
-            //load sorties on products
-            sorties.forEach(sortie => {
-                stocksOverTime.forEach(stock => {
-                    if (stock.produit.id == sortie.produit.id)
-                        stock.sorties.push(sortie)
-                })
-            })
-
-
-            stocksOverTime.forEach(stock => {
-                //for each entre in stock, increment the stock record so it has the total incomming number for this months
-                stock.entrees.forEach(entree => {
-                    var anneeRaw: string = entree.dateOperation
-                    console.log(anneeRaw)
-                    anneeRaw = "2"+anneeRaw.substring(1, 4)
-                    var annee: number = Number.parseInt(anneeRaw)
-
-                    var moisRaw: string = entree.dateOperation
-                    moisRaw = moisRaw.substring(5, 7)
-                    var mois: number = Number.parseInt(moisRaw)
-                    console.log("entree.produit.id: "+entree.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]+", entree.quantite: "+entree.quantite)
-                    stock.stock[annee][mois] = stock.stock[annee][mois] += entree.quantite
-                    console.log("entree.produit.id: "+entree.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois])
-                })
-
-                //for each sortie in stock, decrements the stock record so it has the total incomming number for this months
-                stock.sorties.forEach(sortie => {
-                    var anneeRaw: string = sortie.dateOperation
-                    anneeRaw = anneeRaw.substring(0, 4)
-                    var annee: number = Number.parseInt(anneeRaw)
-
-                    var moisRaw: string = sortie.dateOperation
-                    moisRaw = moisRaw.substring(5, 7)
-                    var mois: number = Number.parseInt(moisRaw)
-                    console.log("entree.produit.id: "+sortie.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois]+", entree.quantite: "+sortie.quantite)
-                    stock.stock[annee][mois] = stock.stock[annee][mois] -= sortie.quantite
-                    console.log("sortie.produit.id: "+sortie.produit.id+", stock.stock["+annee+"]["+mois+"]: "+stock.stock[annee][mois])
-
-                })
-
-                //variable to store quantity over time of the produit 
-                //So it can convert the quantity on the month per year(produitsOverTime) stores
-                //the stock at the date instead of the variation the month had
-                var qtyCalculator: number = stock.produit.quantiteEnStock
-                // find current month
-                var currentMonth: number = new Date().getMonth() - 1
-                // iterate throught currentYear => firstYear record with for loop--
-                for (var i = currentYear; i >= firstYear && i > 2000; i--) {
-                    // check if curent year and set sarting month to dec or current.
-                    if (i == currentYear)
-                        // call on function that goes through the array
-                        processStockPerYear(stock.stock[i], currentMonth)
-                    else
-                        processStockPerYear(stock.stock[i], 11)
-                }
-
-
-                // receive current array and starting month and converts the stored value from quantity fluctuation to quantitty at the time.
-                function processStockPerYear(stock: yearArray, startingMonth: number) {
-                    // go throught array from strating month to 0
-//                    console.log("startingMonth :"+startingMonth)
-                    for (var i = startingMonth; i >= 0; i--) {
-                        // save increamental value
-                        var increamentalValue = stock[i]
-                        // set the months value to qtyCalculator - increamental value
-//                        console.log("stock[i]: "+stock[i]+", qtyCalculator: "+qtyCalculator+", increamentalValue: "+increamentalValue)
-                        stock[i] = qtyCalculator -= increamentalValue
-//                        console.log("updated stock[i]: "+stock[i])
-
-                    }
-                }
-            }
-            )
+/*         clients.forEach(client => {console.log("clients.nom: "+client.nom+", clients.profits: "+client.profits)})        
+ */        var sortedClients = clients
+        /*         sortedClients.forEach(client => {console.log("sortedClients.nom: "+client.nom+", sortedClients.profits: "+client.profits)}) */
+        clients.sort((a, b) => a.profits - b.profits);
+        var top5: Client[] = []
+        for (var i = 0; i < clients.length && i < 5; i++) {
+            top5[i] = clients[clients.length - i - 1]
         }
+        /*         top5.forEach(client => {console.log("top5.nom: "+client.nom+", top5.profits: "+client.profits)})
+         */
+        setTop5Clients(top5);
+        /*         top5Clients.forEach(client => {console.log("top5Clients.nom: "+client.nom+", top5Clients.profits: "+client.profits)})
+         */
     }
 
     //##############################################################################################
@@ -648,7 +659,7 @@ const DashBoard = () => {
 
     function findFirstYear() {
         var foundYear: number = currentYear
-        console.log(foundYear)
+        /*         console.log(foundYear) */
         entrees.forEach(entree => {
             var newYear = Number.parseInt(entree.dateOperation.substring(0, 4))
             if (newYear < foundYear)
@@ -735,39 +746,75 @@ const DashBoard = () => {
         return () => {
             chartContainer.selectAll("*").remove();
         };
-    }, [selectedFournisseur]);
+    }, [selectedYear, selectedMonth, selectedFournisseur, selectedProducts]);
 
-    //create the top 5 client graph
+
+
+    //##############################################################################################
+    //creates the top 5 client graph
     useEffect(() => {
+        const margins = {
+            top : 20,
+            right : 20,
+            bottom : 30,
+            left : 40
+        }
         const width = 640;
         const height = 400;
-        const marginTop = 20;
-        const marginRight = 20;
-        const marginBottom = 30;
-        const marginLeft = 40;
-        const topClients = ["X", "Y", "Z", "A", "B"]
+        var factor : number =  (height-(margins.bottom+margins.top))/height
+
+
+        const topClients: string[] = []
+
+        console.log("top5Clients: "+top5Clients)
+
+        var maxIntervale: number = 0
+        var data : number[] = []
+
+        top5Clients.forEach((client, index) => {
+            topClients[index] = client.nom
+            if (client.profits > maxIntervale)
+                maxIntervale = client.profits
+            data[index] = client.profits
+        })
+        console.log(data)
+
+        console.log("topClients: "+topClients)
 
         const x = d3.scaleBand()
             .domain(topClients)
-            .range(d3.range(topClients.length).map(i => marginLeft + i * (width / topClients.length)));
+            .range([margins.left, width - margins.right]);
 
         const y = d3.scaleLinear()
-            .domain([0, 100])
-            .range([height - marginBottom, marginTop]);
+            .domain([0, maxIntervale])
+            .range([height - margins.bottom, margins.top]);
 
         const svg = d3.create("svg")
             .attr("width", width)
             .attr("height", height);
 
         svg.append("g")
-            .attr("transform", `translate(0,${height - marginBottom})`)
+            .attr("transform", `translate(0,${height - margins.bottom})`)
             .call(d3.axisBottom(x));
 
         svg.append("g")
-            .attr("transform", `translate(${marginLeft},0)`)
+            .attr("transform", `translate(${margins.left},0)`)
             .call(d3.axisLeft(y));
 
+        const colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"];
+        svg.selectAll(".bar")       // Select all existing bars (initially none)
+            .data(data)               // Bind the array of data
+            .enter()                  // Enter the data (handles the new data points)
+            .append("rect")           // Append a new rect for each data point
+            .attr("class", "bar")     // Assign the class "bar" to each rect
+            .attr("x", (d, i) => width/10 + (i * 0.925 * (width - margins.right)/data.length)) // Set x position based on index
+            .attr("y", d => height - margins.bottom - (d / maxIntervale) * (height*factor) )  // Set y position based on data value
+            .attr("width", 75)        // Fixed width for each bar
+            .attr("height", d => (d / maxIntervale) * (height*factor))  // Set height based on data value
+            .attr("fill", (d, i) => colors[i % colors.length]);
+
         const chartContainer = d3.select("#top5Clients");
+        
         chartContainer.selectAll("*").remove();
 
         chartContainer.append(() => svg.node());
@@ -777,7 +824,7 @@ const DashBoard = () => {
         }
 
 
-    }, [selectedFournisseur])
+    }, [selectedYear, selectedMonth, selectedFournisseur, selectedProducts])
 
 
     /*
