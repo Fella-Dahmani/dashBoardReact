@@ -1,42 +1,67 @@
-
+/*
 // GestionAlertes.tsx
 import React, { useEffect, useState } from 'react';
-import { Alert } from './Alert';
-import { fetchAlertes, updateAlerte, applyFilter } from './AlertService';
+import axios from "axios";
 import './GestionAlertes.css';
+
+interface Alert {
+    id: number;
+    type: string;
+    dateCreation: Date;
+    produit:{fournisseur:{nom: string}};
+    message: string;
+    statut:string;
+    dateResolution: Date;
+  }
+
 
 const GestionAlertes: React.FC = () => {
   const [alertes, setAlertes] = useState<Alert[]>([]);
-  const [filterCriteria, setFilterCriteria] = useState({
-    nomAlerte: '',
-    fournisseur: '',
-    statutAlerte: '',
-    dateCreee: '',
-    dateReglee: '',
-  });
+  const [filteredAlertes, setFilteredAlertes] = useState<Alert[]>([]);
+
+  const[nom, setNom ] = useState("")
+  const[status, setStatus] = useState("")
+  const[fournisseur, setFournisseur] = useState("")
+  const[dateCree, setDateCree] = useState("")
+  const[dateReglee, setDateReglee] = useState("")
+   
+
+  const applyFilters =()=>{
+    let params: any ={};
+    if(nom){
+        params.nom = nom.toUpperCase();
+    }
+    if(status){
+        params.status = status.toUpperCase();
+    }
+    if(fournisseur){
+        params.fournisseur = fournisseur.toUpperCase();
+    }
+    if(dateCree){
+        params.dateCree = dateCree;
+    }
+    if(dateReglee){
+        params.dateReglee = dateReglee;
+    }
+
+    axios.get("http://localhost:8080/api/alertes/filter",{params})
+    .then(response =>{
+        setFilteredAlertes(response.data);
+        console.log(response.data);
+       filteredAlertes.forEach(alert=>console.log(alert));
+    })
+    .catch(error => {
+        console.error("Erreur lors du chargement des alertes", error)
+    });
+
+  }
+  
 
   useEffect(() => {
-    const getAlertes = async () => {
-      try {
-        const data = await fetchAlertes();
-        setAlertes(data);
-      } catch (error) {
-        console.error('Erreur lors du chargement des alertes:', error);
-      }
-    };
+    applyFilters()
+  }, [nom, status, fournisseur, dateCree, dateReglee]);
 
-    getAlertes();
-  }, []);
-
-  const appliquerFiltre = async () => {
-    try {
-      const filteredAlertes = await applyFilter(filterCriteria);
-      setAlertes(filteredAlertes);
-    } catch (error) {
-      console.error('Erreur lors de l\'application du filtre:', error);
-    }
-  };
-
+  
   return (
     <div className="gestion-alertes">
       <h1>Gestion des Alertes</h1>
@@ -44,52 +69,51 @@ const GestionAlertes: React.FC = () => {
         <label>Filtre:</label>
         <input
           type="text"
-          placeholder="Nom Alerte"
-          value={filterCriteria.nomAlerte}
+          placeholder="Statut Alerte"
+          value={status}
           onChange={(e) =>
-            setFilterCriteria({ ...filterCriteria, nomAlerte: e.target.value })
+            setStatus(e.target.value)
           }
         />
         <input
           type="text"
-          placeholder="Statut Alerte"
-          value={filterCriteria.statutAlerte}
+          placeholder="Nom Alerte"
+          value={nom}
           onChange={(e) =>
-            setFilterCriteria({ ...filterCriteria, statutAlerte: e.target.value })
-          }
+            setNom(e.target.value)}
+          
         />
         <input
           type="text"
           placeholder="Fournisseur"
-          value={filterCriteria.fournisseur}
+          value={fournisseur}
           onChange={(e) =>
-            setFilterCriteria({ ...filterCriteria, fournisseur: e.target.value })
+            setFournisseur(e.target.value)
           }
         />
-        <label>Date Gérée:</label>
+        <label>Date Créée:</label>
         <input
           type="date"
-          placeholder="Date Créée"
-          value={filterCriteria.dateCreee}
+          placeholder="Date de creation"
+          value={dateCree}
           onChange={(e) =>
-            setFilterCriteria({ ...filterCriteria, dateCreee: e.target.value })
+            setDateCree(e.target.value)
           }
         />
         <label>Date Réglée:</label>
         <input
           type="date"
           placeholder="Date Réglée"
-          value={filterCriteria.dateReglee}
+          value={dateReglee}
           onChange={(e) =>
-            setFilterCriteria({ ...filterCriteria, dateReglee: e.target.value })
+            setDateReglee(e.target.value)
           }
         />
-        <button onClick={appliquerFiltre}>Appliquer Filtre</button>
       </div>
       <table className="alertes-table">
         <thead>
           <tr>
-            <th>Alerte Géré</th>
+            <th>Statut Alerte</th>
             <th>Nom Alerte</th>
             <th>Fournisseur</th>
             <th>Date Créée</th>
@@ -97,31 +121,324 @@ const GestionAlertes: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Oui</td>
-            <td>Alerte Stock Bas</td>
-            <td>Fournisseur X</td>
-            <td>2024-08-10</td>
-            <td>2024-08-12</td>
-          </tr>
-          <tr>
-            <td>Non</td>
-            <td>Alerte Erreur Base de Données</td>
-            <td>Fournisseur Y</td>
-            <td>2024-08-15</td>
-            <td>Non réglée</td>
-          </tr>
-          <tr>
-            <td>Oui</td>
-            <td>Alerte Problème Réseau</td>
-            <td>Fournisseur Z</td>
-            <td>2024-08-18</td>
-            <td>2024-08-19</td>
-          </tr>
+            
+
+        {filteredAlertes.map((alerte)=>(
+                <tr key={alerte.id}>
+                    <td>{alerte.statut}</td>
+                    <td>{alerte.message}</td>
+                    <td>{alerte.produit.fournisseur.nom}</td>
+
+                </tr>
+            ))
+            }
+
+         
+          
         </tbody>
       </table>
     </div>
   );
 };
 
+export default GestionAlertes; */
+
+/*
+// GestionAlertes.tsx
+import React, { useEffect, useState } from 'react';
+import axios from "axios";
+import './GestionAlertes.css';
+
+interface Alert {
+    id: number;
+    type: string;
+    dateCreation: Date;
+    produit: { fournisseur: { nom: string } };
+    message: string;
+    statut: string;
+    dateResolution: Date;
+}
+
+const GestionAlertes: React.FC = () => {
+    const [alertes, setAlertes] = useState<Alert[]>([]);
+    const [filteredAlertes, setFilteredAlertes] = useState<Alert[]>([]);
+
+    const [nom, setNom] = useState("");
+    const [status, setStatus] = useState("");
+    const [fournisseur, setFournisseur] = useState("");
+    const [dateCree, setDateCree] = useState("");
+    const [dateReglee, setDateReglee] = useState("");
+
+    const applyFilters = () => {
+        let params: any = {};
+        if (nom) {
+            params.nom = nom.toUpperCase();
+        }
+        if (status) {
+            params.status = status.toUpperCase();
+        }
+        if (fournisseur) {
+            params.fournisseur = fournisseur.toUpperCase();
+        }
+        if (dateCree) {
+            params.dateCree = dateCree;
+        }
+        if (dateReglee) {
+            params.dateReglee = dateReglee;
+        }
+
+        axios.get("http://localhost:8080/api/alertes/filter", { params })
+            .then(response => {
+                setFilteredAlertes(response.data);
+                console.log(response.data);
+                filteredAlertes.forEach(alert => console.log(alert));
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des alertes", error);
+            });
+    }
+
+    useEffect(() => {
+        applyFilters();
+    }, [nom, status, fournisseur, dateCree, dateReglee]);
+
+    const formatDate = (date: Date) => {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(date).toLocaleDateString('fr-FR', options);
+    }
+
+    return (
+        <div className="gestion-alertes">
+            <h1>Gestion des Alertes</h1>
+            <div className="filters">
+                <label>Filtre:</label>
+                <input
+                    type="text"
+                    placeholder="Statut Alerte"
+                    value={status}
+                    onChange={(e) =>
+                        setStatus(e.target.value)
+                    }
+                />
+                <input
+                    type="text"
+                    placeholder="Nom Alerte"
+                    value={nom}
+                    onChange={(e) =>
+                        setNom(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Fournisseur"
+                    value={fournisseur}
+                    onChange={(e) =>
+                        setFournisseur(e.target.value)
+                    }
+                />
+                <label>Date Créée:</label>
+                <input
+                    type="date"
+                    placeholder="Date de creation"
+                    value={dateCree}
+                    onChange={(e) =>
+                        setDateCree(e.target.value)
+                    }
+                />
+                <label>Date Réglée:</label>
+                <input
+                    type="date"
+                    placeholder="Date Réglée"
+                    value={dateReglee}
+                    onChange={(e) =>
+                        setDateReglee(e.target.value)
+                    }
+                />
+            </div>
+            <table className="alertes-table">
+                <thead>
+                    <tr>
+                        <th>Statut Alerte</th>
+                        <th>Nom Alerte</th>
+                        <th>Fournisseur</th>
+                        <th>Date Créée</th>
+                        <th>Date Réglée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredAlertes.map((alerte) => (
+                        <tr key={alerte.id}>
+                            <td>{alerte.statut}</td>
+                            <td>{alerte.message}</td>
+                            <td>{alerte.produit.fournisseur.nom}</td>
+                            <td>{formatDate(alerte.dateCreation)}</td>
+                            <td>{formatDate(alerte.dateResolution)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
 export default GestionAlertes;
+*/
+
+
+
+// GestionAlertes.tsx
+import React, { useEffect, useState } from 'react';
+import axios from "axios";
+import './GestionAlertes.css';
+
+interface Alert {
+    id: number;
+    type: string;
+    dateCreation: Date;
+    produit: { fournisseur: { nom: string } };
+    message: string;
+    statut: string;
+    dateResolution: Date;
+}
+
+const GestionAlertes: React.FC = () => {
+    const [alertes, setAlertes] = useState<Alert[]>([]);
+    const [filteredAlertes, setFilteredAlertes] = useState<Alert[]>([]);
+
+    const [nom, setNom] = useState("");
+    const [status, setStatus] = useState("");
+    const [fournisseur, setFournisseur] = useState("");
+    const [dateCree, setDateCree] = useState("");
+    const [dateReglee, setDateReglee] = useState("");
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/alertes")
+            .then(response => {
+                setAlertes(response.data);
+                applyFilters(response.data);
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des alertes", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        applyFilters(alertes);
+    }, [nom, status, fournisseur, dateCree, dateReglee]);
+
+    const applyFilters = (alertes: Alert[]) => {
+        let filtered = alertes;
+
+        if (nom) {
+            filtered = filtered.filter(alerte =>
+                alerte.message.toUpperCase().includes(nom.toUpperCase())
+            );
+        }
+
+        if (status) {
+            filtered = filtered.filter(alerte =>
+                alerte.statut.toUpperCase().includes(status.toUpperCase())
+            );
+        }
+
+        if (fournisseur) {
+            filtered = filtered.filter(alerte =>
+                alerte.produit.fournisseur.nom.toUpperCase().includes(fournisseur.toUpperCase())
+            );
+        }
+
+        if (dateCree) {
+            filtered = filtered.filter(alerte =>
+                new Date(alerte.dateCreation).toLocaleDateString('fr-FR') === dateCree
+            );
+        }
+
+        if (dateReglee) {
+            filtered = filtered.filter(alerte =>
+                alerte.dateResolution && new Date(alerte.dateResolution).toLocaleDateString('fr-FR') === dateReglee
+            );
+        }
+
+        setFilteredAlertes(filtered);
+    }
+
+    const formatDate = (date: Date) => {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(date).toLocaleDateString('fr-FR', options);
+    }
+
+    return (
+        <div className="gestion-alertes">
+            <h1>Gestion des Alertes</h1>
+            <div className="filters">
+                <label>Filtre:</label>
+                <input
+                    type="text"
+                    placeholder="Statut Alerte"
+                    value={status}
+                    onChange={(e) =>
+                        setStatus(e.target.value)
+                    }
+                />
+                <input
+                    type="text"
+                    placeholder="Nom Alerte"
+                    value={nom}
+                    onChange={(e) =>
+                        setNom(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Fournisseur"
+                    value={fournisseur}
+                    onChange={(e) =>
+                        setFournisseur(e.target.value)
+                    }
+                />
+                <label>Date Créée:</label>
+                <input
+                    type="date"
+                    placeholder="Date de creation"
+                    value={dateCree}
+                    onChange={(e) =>
+                        setDateCree(e.target.value)
+                    }
+                />
+                <label>Date Réglée:</label>
+                <input
+                    type="date"
+                    placeholder="Date Réglée"
+                    value={dateReglee}
+                    onChange={(e) =>
+                        setDateReglee(e.target.value)
+                    }
+                />
+            </div>
+            <table className="alertes-table">
+                <thead>
+                    <tr>
+                        <th>Statut Alerte</th>
+                        <th>Nom Alerte</th>
+                        <th>Fournisseur</th>
+                        <th>Date Créée</th>
+                        <th>Date Réglée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredAlertes.map((alerte) => (
+                        <tr key={alerte.id}>
+                            <td>{alerte.statut}</td>
+                            <td>{alerte.message}</td>
+                            <td>{alerte.produit.fournisseur.nom}</td>
+                            <td>{formatDate(alerte.dateCreation)}</td>
+                            <td>{formatDate(alerte.dateResolution)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+export default GestionAlertes;
+
+
