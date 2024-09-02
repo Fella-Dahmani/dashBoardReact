@@ -376,36 +376,47 @@ const DashBoard = () => {
                         processStockPerYear(stock.stock[i], currentMonth)
                     else
                         processStockPerYear(stock.stock[i], 11)
-                }
+
+                    //loging of the full matrix of qty of products over time.
+                    Object.entries(stock.stock).forEach(
+                        
+                        ([year, yearArray]) => {
+                            if(stock.produit.fournisseur.nom == selectedFournisseur){
+                                                            yearArray.forEach((qty, index) => {
+                                console.log("founisseur: "+stock.produit.fournisseur.nom + ", produit: " + stock.produit.nom + ", year: " + year +", month: "+index+ ", qty: " + qty)
+                            })
+                            }
+
+                        })
 
 
-                // receive current array and starting month and converts the stored value from quantity fluctuation to quantitty at the time.
-                function processStockPerYear(stock: yearArray, startingMonth: number) {
-                    // go throught array from strating month to 0
-                    //                    console.log("startingMonth :"+startingMonth)
-                    for (var i = startingMonth; i >= 0; i--) {
-                        // save increamental value
-                        var increamentalValue = stock[i]
-                        // set the months value to qtyCalculator - increamental value
-                        //                        console.log("stock[i]: "+stock[i]+", qtyCalculator: "+qtyCalculator+", increamentalValue: "+increamentalValue)
-                        stock[i] = qtyCalculator -= increamentalValue
-                        //                        console.log("updated stock[i]: "+stock[i])
 
+                    // receive current array and starting month and converts the stored value from quantity fluctuation to quantitty at the time.
+                    function processStockPerYear(stock: yearArray, startingMonth: number) {
+                        // go throught array from strating month to 0
+                        //                    console.log("startingMonth :"+startingMonth)
+                        for (var i = startingMonth; i >= 0; i--) {
+                            // save increamental value
+                            var increamentalValue = stock[i]
+                            // set the months value to qtyCalculator - increamental value
+                            stock[i] = qtyCalculator -= increamentalValue
+
+
+                        }
                     }
                 }
-            }
-            )
+            })
         }
-    };
+    }
 
 
     /*
 ######################
-
+ 
     #  #  #
     #  #  #
     #  #  #
-
+ 
 ######################
 */
 
@@ -535,21 +546,13 @@ const DashBoard = () => {
 
     //##############################################################################################
     const updateGraphs = () => {
-        /*      console.log("updateGraphs") */
-
-/*         clients.forEach(client => {console.log("clients.nom: "+client.nom+", clients.profits: "+client.profits)})        
- */        var sortedClients = clients
-        /*         sortedClients.forEach(client => {console.log("sortedClients.nom: "+client.nom+", sortedClients.profits: "+client.profits)}) */
+        var sortedClients = clients
         clients.sort((a, b) => a.profits - b.profits);
         var top5: Client[] = []
         for (var i = 0; i < clients.length && i < 5; i++) {
             top5[i] = clients[clients.length - i - 1]
         }
-        /*         top5.forEach(client => {console.log("top5.nom: "+client.nom+", top5.profits: "+client.profits)})
-         */
         setTop5Clients(top5);
-        /*         top5Clients.forEach(client => {console.log("top5Clients.nom: "+client.nom+", top5Clients.profits: "+client.profits)})
-         */
     }
 
     //##############################################################################################
@@ -598,7 +601,7 @@ const DashBoard = () => {
         #  #   # 
         #   # #                          
         #    #
-
+ 
     ######################
     */
 
@@ -679,7 +682,7 @@ const DashBoard = () => {
             #   # 
              # #                          
               #
-
+ 
     ######################
     */
 
@@ -689,37 +692,94 @@ const DashBoard = () => {
         // Define chart dimensions and margins
         const width = 640;
         const height = 400;
-        const marginTop = 20;
-        const marginRight = 20;
-        const marginBottom = 30;
-        const marginLeft = 40;
-        const lastYear = getLastYear();
-        const startYear = getStartYear();
-        const maxStock = getMaxStock();
-
-        function getMaxStock(): number {
-            // *** PUT THE REAL VALUE HERE ***
-            return 100;
+        const margins = {
+            top: 20,
+            right: 20,
+            bottom: 30,
+            left: 40
         }
 
-        function getLastYear(): Date {
-            // *** PUT THE REAL VALUE HERE ***
-            return new Date;
+        var data = [
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        ]
+
+        compileData();
+        const startYear = getStartYear();
+        const nextYear = getNextYear();
+        const maxStock = getMaxStock(data);
+
+        console.log("data: " + data)
+        var factor: number = (height - (margins.bottom + margins.top)) / height
+
+        const formattedData: [number, number][] = data.map((d, i) => [i, d]);
+
+        function getMaxStock(data: number[]): number {
+            var maxVal: number = 100;
+            data.forEach(n => {
+                if (maxVal < n) {
+                    maxVal = n
+                }
+            })
+            return maxVal;
+        }
+
+        function getNextYear(): Date {
+            if (selectedYear == "Tout")
+                return new Date(`${currentYear}-12-31`);
+            return new Date(`${startYear.getFullYear() + 1}-12-31`);
         }
 
         function getStartYear(): Date {
-            // *** PUT THE REAL VALUE HERE ***
-            return new Date;
+            if (selectedYear == "Tout")
+                return new Date(`${firstYear}-01-01`);
+            return new Date(`${selectedYear}-01-01`);
+        }
+
+        function compileData() {
+
+            if (selectedFournisseur == "Tout" || selectedFournisseur == null) {
+                console.log("all fournisseurs")
+                stocksOverTime.forEach(stock => {
+                    if (selectedYear != "Tout") {
+                        Object.entries(stock.stock).forEach(([year, yearArray]) => {
+                            if (year == selectedYear) {
+                                for (var i = 0; i < 12 && i < yearArray.length; i++) {
+                                    data[i] += yearArray[i]
+                                }
+                            }
+                        })
+                    }
+                })
+            } else {
+                console.log("Per fournisseur")
+                stocksOverTime.forEach(stock => {
+                    if (selectedYear != "Tout") {
+                        Object.entries(stock.stock).forEach(([year, yearArray]) => {
+                            if (year == selectedYear) {
+                                for (var i = 0; i < 12 && i < yearArray.length; i++) {
+                                    if(selectedFournisseur == stock.produit.fournisseur.nom){
+                                        console.log("Produit.fournisseur.nom: "+stock.produit.fournisseur.nom)
+                                        data[i] += yearArray[i]
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
+            }
         }
 
         // Define scales
         const x = d3.scaleUtc()
-            .domain([startYear, lastYear])
-            .range([marginLeft, width - marginRight]);
+            .domain([startYear, nextYear])
+            .range([margins.left, width - margins.right]);
 
         const y = d3.scaleLinear()
             .domain([0, maxStock])
-            .range([height - marginBottom, marginTop]);
+            .range([height - margins.bottom, margins.top]);
 
         // Create SVG container
         const svg = d3.create("svg")
@@ -728,12 +788,25 @@ const DashBoard = () => {
 
         // Add axes
         svg.append("g")
-            .attr("transform", `translate(0,${height - marginBottom})`)
+            .attr("transform", `translate(0,${height - margins.bottom})`)
             .call(d3.axisBottom(x));
 
         svg.append("g")
-            .attr("transform", `translate(${marginLeft},0)`)
+            .attr("transform", `translate(${margins.left},0)`)
             .call(d3.axisLeft(y));
+
+
+        const lineGenerator = d3.line()
+            .x((d, i) => width / 10 + (i * 0.925 * (width - margins.right) / data.length)) // Calculate x position d[0]
+            .y(d => height - margins.bottom - (d[1] / maxStock) * (height * factor)); //(d[1] / maxIntervale) * (height*factor)
+
+        svg.append("path")       // Append a path element
+            .datum(formattedData)         // Bind your data array
+            .attr("class", "line") // Assign a class for styling
+            .attr("d", lineGenerator) // Call the line generator to create the path data
+            .attr("stroke", "blue")        // Line color
+            .attr("stroke-width", 2)       // Line thickness
+            .attr("fill", "none");         // No fill, just the outline
 
         // Select chart container and clean up any previous SVG
         const chartContainer = d3.select("#StockOverTime");
@@ -754,22 +827,22 @@ const DashBoard = () => {
     //creates the top 5 client graph
     useEffect(() => {
         const margins = {
-            top : 20,
-            right : 20,
-            bottom : 30,
-            left : 40
+            top: 20,
+            right: 20,
+            bottom: 30,
+            left: 40
         }
         const width = 640;
         const height = 400;
-        var factor : number =  (height-(margins.bottom+margins.top))/height
+        var factor: number = (height - (margins.bottom + margins.top)) / height
 
 
         const topClients: string[] = []
 
-        console.log("top5Clients: "+top5Clients)
+        /*         console.log("top5Clients: "+top5Clients) */
 
         var maxIntervale: number = 0
-        var data : number[] = []
+        var data: number[] = []
 
         top5Clients.forEach((client, index) => {
             topClients[index] = client.nom
@@ -777,9 +850,9 @@ const DashBoard = () => {
                 maxIntervale = client.profits
             data[index] = client.profits
         })
-        console.log(data)
+        /*         console.log(data) */
 
-        console.log("topClients: "+topClients)
+        /*         console.log("topClients: "+topClients) */
 
         const x = d3.scaleBand()
             .domain(topClients)
@@ -807,14 +880,14 @@ const DashBoard = () => {
             .enter()                  // Enter the data (handles the new data points)
             .append("rect")           // Append a new rect for each data point
             .attr("class", "bar")     // Assign the class "bar" to each rect
-            .attr("x", (d, i) => width/10 + (i * 0.925 * (width - margins.right)/data.length)) // Set x position based on index
-            .attr("y", d => height - margins.bottom - (d / maxIntervale) * (height*factor) )  // Set y position based on data value
+            .attr("x", (d, i) => width / 10 + (i * 0.925 * (width - margins.right) / data.length)) // Set x position based on index
+            .attr("y", d => height - margins.bottom - (d / maxIntervale) * (height * factor))  // Set y position based on data value
             .attr("width", 75)        // Fixed width for each bar
-            .attr("height", d => (d / maxIntervale) * (height*factor))  // Set height based on data value
+            .attr("height", d => (d / maxIntervale) * (height * factor))  // Set height based on data value
             .attr("fill", (d, i) => colors[i % colors.length]);
 
         const chartContainer = d3.select("#top5Clients");
-        
+
         chartContainer.selectAll("*").remove();
 
         chartContainer.append(() => svg.node());
@@ -833,7 +906,7 @@ const DashBoard = () => {
             #   # # 
              # #  #                        
               #   #
-
+ 
     ######################
     */
 
