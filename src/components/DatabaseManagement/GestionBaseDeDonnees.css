@@ -1,0 +1,44 @@
+.gestion-base-de-donnees {
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+  }
+  
+  .gestion-base-de-donnees h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  .modify-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .modify-button:hover {
+    background-color: #0056b3;
+  }
+  

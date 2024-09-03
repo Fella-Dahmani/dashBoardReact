@@ -7,11 +7,17 @@ import CustomerOrders from './components/ordersManagements/pages/CustomerOrders'
 import SupplierOrders from './components/ordersManagements/pages/SupplierOrders';
 import UsersManagement from './components/administration/pages/UsersManagement';
 import BddManagement from './components/administration/pages/BddManagement';
+import GestionAlertes from './components/AlertManagement/GestionAlertes';
+import GestionBaseDeDonnees from './components/DatabaseManagement/GestionBaseDeDonnees';
+import Login from './components/Login/Login';
+
+
 
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="" element={<DashBoard />}/>
+            <Route path="/dashboard" element={<DashBoard />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/inventaires" element={<Inventaires />} />
             <Route path="/stockMouvements" element={<StockMouvements />} />
             <Route path="/locations" element={<Locations />} />
@@ -19,8 +25,9 @@ function AppRoutes() {
             <Route path="/supplierOrders" element={<SupplierOrders />} />
             <Route path="/usersManagement" element={<UsersManagement />} />
             <Route path="/bddManagement" element={<BddManagement />} />
-            <Route path="/bddManagement" element={<BddManagement />} />
-        </Routes>
+            <Route path="/gestionAlertes" element={<GestionAlertes />} />
+            <Route path="/gestionBaseDeDonnees" element={<GestionBaseDeDonnees />} />
+         </Routes>
     );
 }
 

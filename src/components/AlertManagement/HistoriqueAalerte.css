@@ -1,0 +1,42 @@
+/* HistoriqueAlertes.css */
+    
+.historique-alertes {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filters label {
+  margin-right: 10px;
+}
+
+.filters input[type="checkbox"],
+.filters select,
+.filters input[type="date"] {
+  margin-right: 10px;
+}
+
+.filters button {
+  margin-left: auto;
+}
+
+.alertes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.alertes-table th,
+.alertes-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.alertes-table th {
+  background-color: #f4f4f4;
+}

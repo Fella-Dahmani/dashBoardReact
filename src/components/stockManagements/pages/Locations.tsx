@@ -1,163 +1,217 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 type LocationData = {
-  code: string;
+  id: number;
+  codeProduit: string;
+  nom: string;
+  categorie: {
+    code: string;
+    description: string;
+  };
   description: string;
-  categorie: string;
-  quantite: number;
-  fournisseur: string;
-  prix: number;
   seuilCritique: number;
-  entrepot: string;
+  prixU: number;
+  dateAchat: string;
+  dateExpiration: string;
+  quantiteEnStock: number;
+  quantiteMaximale: number;
+  prixVente: number;
+  fournisseur: {
+    id: number;
+    codeFournisseur: string;
+    nom: string;
+    prenom: string;
+    statut: boolean;
+    email: string;
+    tel: string;
+    adresse: string;
+    nrc: string;
+  };
+  emplacement: {
+    id: number;
+    typeEmplacement: string;
+    capaciteMax: number;
+    quantiteActuelle: number;
+    statut: string;
+    nomEmplacement: string;
+    descEmplacement: string;
+    codeEmp: string;
+  };
 };
 
+
 const Locations = () => {
-  // Exemple de données, à remplacer par les données réelles
-  const [data, setData] = useState<LocationData[]>([
-    { code: "1", description: "Produit 1", categorie: "Cat1", quantite: 10, fournisseur: "Fournisseur A", prix: 50, seuilCritique: 5, entrepot: "Entrepot 1" },
-    { code: "2", description: "Produit 2", categorie: "Cat2", quantite: 20, fournisseur: "Fournisseur B", prix: 100, seuilCritique: 10, entrepot: "Entrepot 2" },
-    // Ajoutez d'autres données ici
-  ]);
+  const [productsData, setProductsData] = useState<LocationData[]>([]);
+  const [categoriesData, setCategoriesData] = useState<LocationData[]>([]);
+  const [locationData, setLocationData] = useState<LocationData[]>([]);
 
-  const [search, setSearch] = useState({
-    produit: "",
-    categorie: "",
-    emplacement: "",
-  });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSearch({ ...search, [name]: value.toLowerCase() });
+  // Fetch data by product
+  const fetchProduits = async (keyword: string = "") => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/emplacements/produits/recherche", {
+        params: { keyword },
+      });
+      setProductsData(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits :", error);
+    }
   };
 
-  const filteredByProduit = data.filter(item =>
-    item.code.toLowerCase().includes(search.produit) ||
-    item.description.toLowerCase().includes(search.produit)
-  );
+  // Fetch data by category
+  const fetchCategorie = async (categorie: string = "") => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/emplacements/produits/categorie", {
+        params: { categorie },
+      });
+      setCategoriesData(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits par catégorie :", error);
+    }
+  };
 
-  const filteredByCategorie = data.filter(item =>
-    item.code.toLowerCase().includes(search.categorie) ||
-    item.categorie.toLowerCase().includes(search.categorie)
-  );
+  // Fetch data by location
+  const fetchEmplacement = async (emplacement: string = "") => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/emplacements/produits/emplacement", {
+        params: { emplacement },
+      });
+      setLocationData(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits par emplacement :", error);
+    }
+  };
 
-  const filteredByEmplacement = data.filter(item =>
-    item.code.toLowerCase().includes(search.emplacement) ||
-    item.entrepot.toLowerCase().includes(search.emplacement)
-  );
+  useEffect(() => {
+      fetchProduits();
+      fetchCategorie();
+      fetchEmplacement()
+  }, []);
 
   return (
     <div>
       <h1 className="title">Emplacement</h1>
 
-      {/* Section Par produit */}
+      {/* Product */}
       <div className="subTitleContainerlocation">
         <h2 className="subtitle">Par produit</h2>
         <input
           type="text"
           name="produit"
-          placeholder="Recherche"
-          onChange={handleSearchChange}
+          placeholder="Recherche par code ou description"
+          onChange={(e) => fetchProduits(e.target.value)}
         />
-        <button>Appliquer les filtres</button>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Code</th>
-            <th>Description</th>
+            <th>Code Produit</th>
+            <th>Nom</th>
             <th>Categorie</th>
-            <th>Quantite</th>
-            <th>Fournisseur</th>
-            <th>Prix</th>
+            <th>Description</th>
+            <th>Quantité en Stock</th>
+            <th>Prix Unitaire</th>
+            <th>Prix de Vente</th>
             <th>Seuil Critique</th>
+            <th>Fournisseur</th>
           </tr>
         </thead>
         <tbody>
-          {filteredByProduit.map(item => (
-            <tr key={item.code}>
-              <td>{item.code}</td>
+          {productsData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.codeProduit}</td>
+              <td>{item.nom}</td>
+              <td>{item.categorie.description}</td>
               <td>{item.description}</td>
-              <td>{item.categorie}</td>
-              <td>{item.quantite}</td>
-              <td>{item.fournisseur}</td>
-              <td>{item.prix}</td>
+              <td>{item.quantiteEnStock}</td>
+              <td>{item.prixU}</td>
+              <td>{item.prixVente}</td>
               <td>{item.seuilCritique}</td>
+              <td>{`${item.fournisseur.nom} ${item.fournisseur.prenom}`}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Section Par catégorie */}
+      {/* Catégorie */}
       <div className="subTitleContainerlocation">
         <h2 className="subtitle">Par catégorie</h2>
         <input
           type="text"
           name="categorie"
-          placeholder="Recherche"
-          onChange={handleSearchChange}
+          placeholder="Recherche par catégorie"
+          onChange={(e) => fetchCategorie(e.target.value)}
         />
-        <button>Appliquer les filtres</button>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Code</th>
-            <th>Description</th>
+            <th>Code Produit</th>
+            <th>Nom</th>
             <th>Categorie</th>
-            <th>Quantite</th>
-            <th>Fournisseur</th>
-            <th>Prix</th>
+            <th>Description</th>
+            <th>Quantité en Stock</th>
+            <th>Prix Unitaire</th>
+            <th>Prix de Vente</th>
             <th>Seuil Critique</th>
+            <th>Fournisseur</th>
           </tr>
         </thead>
         <tbody>
-          {filteredByCategorie.map(item => (
-            <tr key={item.code}>
-              <td>{item.code}</td>
+          {categoriesData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.codeProduit}</td>
+              <td>{item.nom}</td>
+              <td>{item.categorie.description}</td>
               <td>{item.description}</td>
-              <td>{item.categorie}</td>
-              <td>{item.quantite}</td>
-              <td>{item.fournisseur}</td>
-              <td>{item.prix}</td>
+              <td>{item.quantiteEnStock}</td>
+              <td>{item.prixU}</td>
+              <td>{item.prixVente}</td>
               <td>{item.seuilCritique}</td>
+              <td>{`${item.fournisseur.nom} ${item.fournisseur.prenom}`}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Section Par emplacement */}
+      {/* Location*/}
       <div className="subTitleContainerlocation">
         <h2 className="subtitle">Par emplacement</h2>
         <input
           type="text"
           name="emplacement"
-          placeholder="Recherche"
-          onChange={handleSearchChange}
+          placeholder="Recherche par emplacement"
+          onChange={(e) => fetchEmplacement(e.target.value)}
         />
-        <button>Appliquer les filtres</button>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Code</th>
-            <th>Description</th>
+            <th>Code Produit</th>
+            <th>Nom</th>
             <th>Categorie</th>
-            <th>Quantite</th>
-            <th>Fournisseur</th>
+            <th>Description</th>
+            <th>Quantité en Stock</th>
+            <th>Prix Unitaire</th>
+            <th>Prix de Vente</th>
             <th>Seuil Critique</th>
+            <th>Fournisseur</th>
             <th>Entrepot</th>
           </tr>
         </thead>
         <tbody>
-          {filteredByEmplacement.map(item => (
-            <tr key={item.code}>
-              <td>{item.code}</td>
+          {locationData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.codeProduit}</td>
+              <td>{item.nom}</td>
+              <td>{item.categorie.description}</td>
               <td>{item.description}</td>
-              <td>{item.categorie}</td>
-              <td>{item.quantite}</td>
-              <td>{item.fournisseur}</td>
+              <td>{item.quantiteEnStock}</td>
+              <td>{item.prixU}</td>
+              <td>{item.prixVente}</td>
               <td>{item.seuilCritique}</td>
-              <td>{item.entrepot}</td>
+              <td>{`${item.fournisseur.nom} ${item.fournisseur.prenom}`}</td>
+              <td>{item.emplacement.nomEmplacement}</td>
             </tr>
           ))}
         </tbody>
