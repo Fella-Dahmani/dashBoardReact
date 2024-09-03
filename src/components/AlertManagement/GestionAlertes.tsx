@@ -348,13 +348,13 @@ const GestionAlertes: React.FC = () => {
 
         if (dateCree) {
             filtered = filtered.filter(alerte =>
-                new Date(alerte.dateCreation).toLocaleDateString('fr-FR') === dateCree
+                new Date(alerte.dateCreation).toLocaleDateString('en-CA') === dateCree
             );
         }
 
         if (dateReglee) {
             filtered = filtered.filter(alerte =>
-                alerte.dateResolution && new Date(alerte.dateResolution).toLocaleDateString('fr-FR') === dateReglee
+                alerte.dateResolution && new Date(alerte.dateResolution).toLocaleDateString('en-CA') === dateReglee
             );
         }
 
