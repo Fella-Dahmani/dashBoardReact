@@ -16,7 +16,6 @@ import Login from './components/Login/Login';
 function AppRoutes() {
     return (
         <Routes>
-            
             <Route path="/dashboard" element={<DashBoard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/inventaires" element={<Inventaires />} />
@@ -28,12 +27,7 @@ function AppRoutes() {
             <Route path="/bddManagement" element={<BddManagement />} />
             <Route path="/gestionAlertes" element={<GestionAlertes />} />
             <Route path="/gestionBaseDeDonnees" element={<GestionBaseDeDonnees />} />
-            
-
-
-
-            
-        </Routes>
+         </Routes>
     );
 }
 

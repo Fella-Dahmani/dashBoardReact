@@ -1,0 +1,65 @@
+.headerContainer {
+    display: flex;
+    align-items: center; /* Aligns items vertically in the center */
+  }
+  
+  .headerContainer h1 {
+    margin-right: 20px; /* Adds some space between the h1 and the next element */
+  }
+  
+  .headerContainer .fadedLabel {
+    margin-right: 10px; /* Adds space between the label and the select element */
+    color: darkgrey;
+  }
+
+  .headerContainer .timePicker{
+    margin-left: 10px;
+  }
+
+  table{
+  border: none;
+  outline: none;
+  text-decoration: none;
+  text-decoration: none;
+  border-collapse: unset !important;
+
+}
+table tbody {
+  border: none !important; /* Example to remove border */
+  outline: none; /* Example to remove outline */
+  text-decoration: none; /* Example to remove text decoration */
+}
+
+/* If needed, apply styles directly to tbody to ensure override */
+table > tbody {
+  border: none !important;
+  outline: none;
+  text-decoration: none;
+}
+
+.reportFormat{
+  display: inline-block;
+}
+
+.report {
+  background-color: #fff; /* White background for the card */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Drop shadow */
+  padding: 16px; /* Space inside the card */
+  margin: 16px; /* Space outside the card */
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow effect */
+  display: inline-block;
+}
+
+/* Optional: Add hover effect for interactivity */
+.report:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.card{
+  text-align: left !important;
+}
+.dataPicker{
+  margin-left: 50px;
+  vertical-align: top;
+}
