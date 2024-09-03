@@ -311,7 +311,7 @@ const GestionAlertes: React.FC = () => {
     const [dateReglee, setDateReglee] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/alertes")
+        axios.get("https://stockvisiobackend.onrender.com/api/alertes")
             .then(response => {
                 setAlertes(response.data);
                 applyFilters(response.data);
