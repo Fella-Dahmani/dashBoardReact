@@ -1,0 +1,94 @@
+/*
+ GestionAlertes.css */
+ /*
+.gestion-alertes {
+    padding: 20px;
+  }
+  
+  .gestion-alertes h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .alertes-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .alertes-table th,
+  .alertes-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .alertes-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .alertes-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .alertes-table button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .alertes-table button:hover {
+    background-color: #0056b3;
+  }
+    */
+
+    
+    .gestion-alertes {
+      margin: 20px;
+    }
+    
+    .filters {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .filters label {
+      margin-right: 10px;
+    }
+    
+    .filters input {
+      margin-right: 10px;
+    }
+    
+    .filters button {
+      margin-left: auto;
+    }
+    
+    .alertes-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .alertes-table th,
+    .alertes-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    
+    .alertes-table th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+
+
+
+
+
+    
+    
+    
+  

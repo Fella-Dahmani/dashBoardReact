@@ -44,13 +44,19 @@ const VerticalNavBar = () => {
             </div>
             <div>
                 <img src={dashboardAsset} alt="dashboard" />
-                <a href="BddManagement">Gestion de la base des donnees</a>
+                <a href="GestionBaseDeDonnees">Gestion de la base des donnees</a>
             </div>
 
             <p>Gestion des alertes</p>
             <div>
                 <img src={dashboardAsset} alt="dashboard" />
-                <a href="AlertsManagement">Gestion des alertes</a>
+                <a href="GestionAlertes">Gestion des alertes</a>
+            </div>
+
+            
+            <div>
+                <img src={dashboardAsset} alt="dashboard" />
+                <a href="HistoriqueAlertes">Historique des alertes</a>
             </div>
         </div>
     );
