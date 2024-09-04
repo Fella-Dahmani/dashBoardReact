@@ -49,7 +49,7 @@ const Locations = () => {
   // Fetch data by product
   const fetchProduits = async (keyword: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/recherche", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/recherche", {
         params: { keyword },
       });
       setProductsData(response.data);
@@ -61,9 +61,10 @@ const Locations = () => {
   // Fetch data by category
   const fetchCategorie = async (categorie: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/categorie", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/categorie", {
         params: { categorie },
       });
+      console.log(response.data)
       setCategoriesData(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des produits par catégorie :", error);
@@ -73,7 +74,7 @@ const Locations = () => {
   // Fetch data by location
   const fetchEmplacement = async (emplacement: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/emplacement", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/emplacement", {
         params: { emplacement },
       });
       setLocationData(response.data);
@@ -105,29 +106,29 @@ const Locations = () => {
       <table>
         <thead>
           <tr>
-            <th>Code Produit</th>
+           <th>Type d'emplacement</th>
+            <th>Capacite max</th>
+            <th>Statut</th>
+            <th>Nom d'emplacement</th>
+             <th>Code Produit</th>
             <th>Nom</th>
             <th>Categorie</th>
             <th>Description</th>
             <th>Quantité en Stock</th>
-            <th>Prix Unitaire</th>
-            <th>Prix de Vente</th>
-            <th>Seuil Critique</th>
-            <th>Fournisseur</th>
           </tr>
         </thead>
         <tbody>
           {productsData.map((item) => (
             <tr key={item.id}>
+              <td>{item.emplacement.typeEmplacement}</td>
+              <td>{item.emplacement.capaciteMax}</td>
+              <td>{item.emplacement.statut}</td>
+              <td>{item.emplacement.nomEmplacement}</td>
               <td>{item.codeProduit}</td>
               <td>{item.nom}</td>
               <td>{item.categorie.description}</td>
               <td>{item.description}</td>
               <td>{item.quantiteEnStock}</td>
-              <td>{item.prixU}</td>
-              <td>{item.prixVente}</td>
-              <td>{item.seuilCritique}</td>
-              <td>{`${item.fournisseur.nom} ${item.fournisseur.prenom}`}</td>
             </tr>
           ))}
         </tbody>
@@ -190,13 +191,13 @@ const Locations = () => {
             <th>Code Produit</th>
             <th>Nom</th>
             <th>Categorie</th>
-            <th>Description</th>
             <th>Quantité en Stock</th>
-            <th>Prix Unitaire</th>
-            <th>Prix de Vente</th>
             <th>Seuil Critique</th>
             <th>Fournisseur</th>
             <th>Entrepot</th>
+            <th>Type d'emplacement</th>
+            <th>Capacite max</th>
+            <th>Statut</th>
           </tr>
         </thead>
         <tbody>
@@ -205,13 +206,13 @@ const Locations = () => {
               <td>{item.codeProduit}</td>
               <td>{item.nom}</td>
               <td>{item.categorie.description}</td>
-              <td>{item.description}</td>
               <td>{item.quantiteEnStock}</td>
-              <td>{item.prixU}</td>
-              <td>{item.prixVente}</td>
               <td>{item.seuilCritique}</td>
               <td>{`${item.fournisseur.nom} ${item.fournisseur.prenom}`}</td>
               <td>{item.emplacement.nomEmplacement}</td>
+              <td>{item.emplacement.typeEmplacement}</td>
+              <td>{item.emplacement.capaciteMax}</td>
+              <td>{item.emplacement.statut}</td>
             </tr>
           ))}
         </tbody>

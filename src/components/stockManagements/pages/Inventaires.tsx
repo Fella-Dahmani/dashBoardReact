@@ -50,8 +50,9 @@ const Inventaires = () => {
             params.fournisseur = fournisseur.toUpperCase();
         }
 
-        axios.get("http://localhost:8080/api/produits/filtered", { params })
+        axios.get("https://stockvisiobackend.onrender.com/api/produits/filtered", { params })
             .then(response => {
+                console.log(response.data)
                 setFilteredProduits(response.data);
             })
             .catch(error => {
@@ -77,7 +78,7 @@ const Inventaires = () => {
                 <button
                     className={activeButton === "rupture" ? "btnPrimary" : ""}
                     onClick={() => toggleButton("rupture")}
-                >Rupture de stock</button>
+                >Rupture</button>
                 <button
                     className={activeButton === "surstock" ? "btnPrimary" : ""}
                     onClick={() => toggleButton("surstock")}

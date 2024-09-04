@@ -16,7 +16,7 @@ import Login from './components/Login/Login';
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/dashboard" element={<DashBoard />} />
+            <Route path="/" element={<DashBoard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/inventaires" element={<Inventaires />} />
             <Route path="/stockMouvements" element={<StockMouvements />} />
