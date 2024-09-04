@@ -49,7 +49,7 @@ const Locations = () => {
   // Fetch data by product
   const fetchProduits = async (keyword: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/recherche", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/recherche", {
         params: { keyword },
       });
       setProductsData(response.data);
@@ -61,7 +61,7 @@ const Locations = () => {
   // Fetch data by category
   const fetchCategorie = async (categorie: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/categorie", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/categorie", {
         params: { categorie },
       });
       setCategoriesData(response.data);
@@ -73,7 +73,7 @@ const Locations = () => {
   // Fetch data by location
   const fetchEmplacement = async (emplacement: string = "") => {
     try {
-      const response = await axios.get("http://localhost:8080/api/emplacements/produits/emplacement", {
+      const response = await axios.get("https://stockvisiobackend.onrender.com/api/emplacements/produits/emplacement", {
         params: { emplacement },
       });
       setLocationData(response.data);
