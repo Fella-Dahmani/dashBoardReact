@@ -50,7 +50,7 @@ const Inventaires = () => {
             params.fournisseur = fournisseur.toUpperCase();
         }
 
-        axios.get("https://stockvisiobackend.onrender.com/api/produits/filtered", { params })
+        axios.get("http://localhost:8080/api/produits/filtered", { params })
             .then(response => {
                 setFilteredProduits(response.data);
             })

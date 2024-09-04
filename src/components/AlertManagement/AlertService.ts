@@ -3,7 +3,7 @@
 // AlertService.ts
 import { Alert } from './Alert';
 
-const API_URL = 'https://stockvisiobackend.onrender.com/api/alertes'; // Verifier l'URL avec Bruno
+const API_URL = 'http://localhost:8080/api/alertes'; // Verifier l'URL avec Bruno
 
 export const fetchAlertes = async (): Promise<Alert[]> => {
   const response = await fetch(API_URL);
